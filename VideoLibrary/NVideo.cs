@@ -87,10 +87,8 @@ namespace VideoLibrary
                 count += 1;
             }
             vd.Dispose();
-            //
             return videoBitmapArray;
         }
-
         public int[] GetEncodedFrame(string key)
         {
             foreach (NFrame nf in nFrames)
@@ -102,9 +100,15 @@ namespace VideoLibrary
             }
             return new int[] { 4, 2, 3 };
         }
-        public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor)
+        public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor, char[] codec = null )
         {
-            using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, dimension, isColor))
+            if( codec == null)
+            {
+                codec = new char[] {'M', 'P', '4', 'V'};
+            }
+            int fourcc = VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]);
+            //There was a -1 instead of fourcc, Now fourcc is required for selecting codec, it requires 4 parameters as input
+            using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", fourcc, (int)frameRate, dimension, isColor))
             {
                 foreach (NFrame frame in bitmapList)
                 {
