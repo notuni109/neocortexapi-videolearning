@@ -100,6 +100,16 @@ namespace VideoLibrary
             }
             return new int[] { 4, 2, 3 };
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bitmapList">indexing a list of objects for sorting,searching and manipulating</param>
+        /// <param name="videoOutputPath">Full path of the output of the video</param>
+        /// <param name="frameRate">Rate of the frame </param>
+        /// <param name="dimension">Height & Width of objects</param>
+        /// <param name="isColor">Color is True or False</param>
+        /// <param name="codec"> null </param>
         public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor, char[] codec = null )
         {
             if( codec == null)
