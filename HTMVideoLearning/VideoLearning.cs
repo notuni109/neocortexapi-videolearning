@@ -21,7 +21,7 @@ namespace HTMVideoLearning
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
-            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Noath2302");
+            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} CodeBreakers");
             HelperFunction.WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
             string trainingFolderPath = Console.ReadLine();
 

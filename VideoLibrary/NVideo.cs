@@ -9,7 +9,7 @@ namespace VideoLibrary
     /// <br>Represent a single video, which contains</br>
     /// <br>Name of the video, but not including suffix format</br>
     /// <br>List of int[], with each int[] is a frame in chronological order start - end</br>
-    /// <br>The Image can be scaled
+    /// <br>The Image can be scaled</br>
     /// </para>
     /// </summary>
     public class NVideo
@@ -48,7 +48,7 @@ namespace VideoLibrary
             }
         }
         /// <summary>
-        /// <para>Method to read a video into a list of Bitmap, from video path to a list of Bitmap</para>
+        /// <para>Method to read a video into a list of Bitmap, from video path to a list of Bitmap images</para>
         /// The current implementation uses OpenCV wrapper emgu
         /// </summary>
         /// <param name="videoPath"> full path of the video to be read </param>
@@ -102,22 +102,23 @@ namespace VideoLibrary
         }
 
         /// <summary>
-        /// 
+        /// Method to create video from Image Frames list
         /// </summary>
         /// <param name="bitmapList">indexing a list of objects for sorting,searching and manipulating</param>
-        /// <param name="videoOutputPath">Full path of the output of the video</param>
-        /// <param name="frameRate">Rate of the frame </param>
-        /// <param name="dimension">Height & Width of objects</param>
-        /// <param name="isColor">Color is True or False</param>
-        /// <param name="codec"> null </param>
+        /// <param name="videoOutputPath">Folder path of the output of the video</param>
+        /// <param name="frameRate">Rate of the frame in fps</param>
+        /// <param name="dimension">Height & Width of Image Frames</param>
+        /// <param name="isColor">Color of the images with boolean value True or False as colored or balck & white</param>
+        /// <param name="codec">Coding decoding technique which requires four char values associated with VideoWriter.Fourcc method</param>
         public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor, char[] codec = null )
         {
+            //Set the default codec of fourcc
             if( codec == null)
             {
                 codec = new char[] {'M', 'P', '4', 'V'};
             }
             int fourcc = VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]);
-            //There was a -1 instead of fourcc, Now fourcc is required for selecting codec, it requires 4 parameters as input
+            //There was a -1 instead of fourcc which works on older framework to bring the drop down menu selection of codec
             using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", fourcc, (int)frameRate, dimension, isColor))
             {
                 foreach (NFrame frame in bitmapList)

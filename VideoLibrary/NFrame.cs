@@ -13,11 +13,11 @@ namespace VideoLibrary
     {
         BLACKWHITE = 1,
         // Image Binarization by RED channel
-        // -- If a pixel has R color value more than 128 it is 0, else is it 1
+        // -- If a pixel has R color value more than 128 it is 0, else it is 1
         // Size int[] = Number of pixel x 1
         BINARIZEDRGB = 3,
         // Taking all the binarized value of each channels in R/G/B 
-        // -- If a pixel has R/B/G color value more than 128 it is 0, else is it 1 
+        // -- If a pixel has R/B/G color value more than 128 it is 0, else it is 1 
         // Size int[] = Number of pixel x 3
         PURE = 24,
         // No binarization, taking all color resolution of R/G/B channel
@@ -61,11 +61,11 @@ namespace VideoLibrary
             Bitmap img = ResizeBitmap(image, frameWidth, frameHeight);
             List<int> imageBinary = new List<int>();
 
-            for (int y = 0; y < img.Height; y++)
+            for (int heightCount = 0; heightCount < img.Height; heightCount++)
             {
-                for (int x = 0; x < img.Width; x++)
+                for (int widthCount = 0; widthCount < img.Width; widthCount++)
                 {
-                    Color pixel = img.GetPixel(x, y);
+                    Color pixel = img.GetPixel(widthCount, heightCount);
                     switch (colorMode)
                     {
                         // adding different color mode here for different format of output int[]
@@ -91,7 +91,10 @@ namespace VideoLibrary
             }
             return imageBinary.ToArray();
         }
-
+        /// <summary>
+        /// Saves the video frame into bitmap image
+        /// </summary>
+        /// <param name="outputFile"></param>
         public void SaveFrame(string outputFile)
         {
             Bitmap temp = IntArrayToBitmap(EncodedBitArray);
@@ -105,7 +108,7 @@ namespace VideoLibrary
         ///         scaling color resolution e.g. 8 bit --> 5bit
         /// </summary>
         /// <param name="r">color byte to convert</param>
-        /// <returns></returns>
+        /// <returns>List of binary values of color channel byte value</returns>
         public static List<int> ColorChannelToBinList(byte r)
         {
             List<int> binaryList = new();
@@ -117,7 +120,6 @@ namespace VideoLibrary
             }
             return binaryList;
         }
-
         /// <summary>
         /// Resize a Bitmap object to desired width and height
         /// </summary>
@@ -181,7 +183,7 @@ namespace VideoLibrary
         {
             int decimalValue = 0;
             int power = 0;
-            for(int i = binaryArray.Length-1;i>=0;i-=1)
+            for(int i = binaryArray.Length-1; i>=0; i-=1)
             {
                 decimalValue += binaryArray[i]*(int)Math.Pow(2, power);
                 power += 1;
