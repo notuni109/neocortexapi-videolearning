@@ -21,8 +21,8 @@ namespace HTMVideoLearning
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
-            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} CodeBreakers");
-            HelperFunction.WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
+            WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} CodeBreakers");
+            WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
             string trainingFolderPath = Console.ReadLine();
 
             sw.Start();
@@ -54,7 +54,7 @@ namespace HTMVideoLearning
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
-            string[] videoSetPaths = HelperFunction.GetVideoSetPaths(trainingFolderPath);
+            string[] videoSetPaths = GetVideoSetPaths(trainingFolderPath);
 
             // A list of VideoSet object, each has the Videos and the name of the folder as Label, contains all the Data in TrainingVideos,
             // this List will be the core iterator in later learning and predicting
@@ -123,11 +123,11 @@ namespace HTMVideoLearning
                 foreach (VideoSet set in videoData)
                 {
                     // Show Set Label/ Folder Name of each video set
-                    HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
+                    WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
                     foreach (NVideo vid in set.nVideoList)
                     {
                         // Show the name of each video
-                        HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
+                        WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
                         foreach (NFrame frame in vid.nFrames)
                         {
                             //Console.WriteLine($" -- {frame.FrameKey} --");
@@ -157,7 +157,7 @@ namespace HTMVideoLearning
             for (int i = 0; i < maxCycles; i++)
             {
                 List<double> setAccuracy = new();
-                HelperFunction.WriteLineColor($"------------- Cycle {i} -------------", ConsoleColor.Green);
+                WriteLineColor($"------------- Cycle {i} -------------", ConsoleColor.Green);
                 // Iterating through every video set
                 foreach (VideoSet vs in videoData)
                 {
@@ -182,8 +182,8 @@ namespace HTMVideoLearning
 
                             List<Cell> actCells;
 
-                            HelperFunction.WriteLineColor($"WinnerCell Count: {lyrOut.WinnerCells.Count}", ConsoleColor.Cyan);
-                            HelperFunction.WriteLineColor($"ActiveCell Count: {lyrOut.ActiveCells.Count}", ConsoleColor.Cyan);
+                            WriteLineColor($"WinnerCell Count: {lyrOut.WinnerCells.Count}", ConsoleColor.Cyan);
+                            WriteLineColor($"ActiveCell Count: {lyrOut.ActiveCells.Count}", ConsoleColor.Cyan);
 
                             if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
                             {
@@ -200,20 +200,20 @@ namespace HTMVideoLearning
                             // From experiment the number of Predicted cells increase over cycles and reach stability later.
                             if (lyrOut.PredictiveCells.Count > 0)
                             {
-                                HelperFunction.WriteLineColor("Predicted Values for current frame: ", ConsoleColor.Yellow);
+                                WriteLineColor("Predicted Values for current frame: ", ConsoleColor.Yellow);
 
                                 // Checking the Predicted Cells by printing them out
                                 Cell[] cellArray = lyrOut.PredictiveCells.ToArray();
                                 /*
                                 foreach (Cell nCell in cellArray)
                                 {
-                                    HelperFunction.WriteLineColor(nCell.ToString(), ConsoleColor.Yellow);
+                                    WriteLineColor(nCell.ToString(), ConsoleColor.Yellow);
 
                                 }
                                 */
                                 // HTMClassifier used Predicted Cells to infer learned frame key 
                                 var predictedFrames = cls.GetPredictedInputValues(cellArray, 5);
-                                HelperFunction.WriteLineColor("Predicted next Frame's Label:",ConsoleColor.Yellow);
+                                WriteLineColor("Predicted next Frame's Label:",ConsoleColor.Yellow);
                                 foreach (var item in predictedFrames)
                                 {
                                     //Console.WriteLine($"Current Input: {currentFrame.FrameKey} \t| Predicted Input: {item.PredictedInput}");
@@ -223,8 +223,8 @@ namespace HTMVideoLearning
                             else
                             {
                                 // If No Cells is predicted
-                                //HelperFunction.WriteLineColor($"CURRENT FRAME: {currentFrame.FrameKey}", ConsoleColor.Red);
-                                HelperFunction.WriteLineColor("NO CELLS PREDICTED  FOR THIS FRAME", ConsoleColor.Red);
+                                //WriteLineColor($"CURRENT FRAME: {currentFrame.FrameKey}", ConsoleColor.Red);
+                                WriteLineColor("NO CELLS PREDICTED  FOR THIS FRAME", ConsoleColor.Red);
                             }
                         }
                         // Inferring Mode
@@ -263,12 +263,12 @@ namespace HTMVideoLearning
                             if (possibleOutcomeSerie[j].Contains(trainingVideo[j].FrameKey))
                             {
                                 correctlyPredictedFrame += 1;
-                                HelperFunction.WriteLineColor(message, ConsoleColor.Green);
+                                WriteLineColor(message, ConsoleColor.Green);
                                 resultToWrite.Add($"FOUND:   {message}");
                             }
                             else
                             {
-                                HelperFunction.WriteLineColor(message, ConsoleColor.Gray);
+                                WriteLineColor(message, ConsoleColor.Gray);
                                 resultToWrite.Add($"NOTFOUND {message}");
                             }
                         }
@@ -285,11 +285,11 @@ namespace HTMVideoLearning
                         tm.Reset(mem);
                     }
                     double currentSetAccuracy = videoAccuracy.Average();
-                    HelperFunction.WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%",ConsoleColor.Cyan);
+                    WriteLineColor($"Video Set of Label: {vs.VideoSetLabel} reachs accuracy: {currentSetAccuracy * 100}%",ConsoleColor.Cyan);
                     setAccuracy.Add(currentSetAccuracy);
                 }
                 cycleAccuracy = setAccuracy.Average();
-                HelperFunction.WriteLineColor($"Accuracy in Cycle {i}: {cycleAccuracy*100}%");
+                WriteLineColor($"Accuracy in Cycle {i}: {cycleAccuracy*100}%");
                 // Check if accuracy is stable
                 if (lastCycleAccuracy == cycleAccuracy)
                 {
@@ -349,7 +349,7 @@ namespace HTMVideoLearning
             // Testing Section
             string userInput;
             
-            HelperFunction.WriteLineColor("Drag a Frame(Picture) to recall the learned videos : ", ConsoleColor.Cyan);
+            WriteLineColor("Drag a Frame(Picture) to recall the learned videos : ", ConsoleColor.Cyan);
             int testNo = 0;
 
             do
@@ -383,7 +383,7 @@ namespace HTMVideoLearning
                                 break;
                             }
                         }
-                        HelperFunction.WriteLineColor($"Predicted nextFrame: {currentFrameKey}", ConsoleColor.Green);
+                        WriteLineColor($"Predicted nextFrame: {currentFrameKey}", ConsoleColor.Green);
 
                         var computedSDR = layer1.Compute(currentFrame.EncodedBitArray, false) as ComputeCycle;
                         var predictedNext = cls.GetPredictedInputValues(computedSDR.PredictiveCells.ToArray(), 3);
@@ -418,11 +418,11 @@ namespace HTMVideoLearning
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
-            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
+            WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
 
             // The current training Folder is located in HTMVideoLlearning/
             // SmallTrainingSet ; Training Videos ; oneVideoTrainingSet
-            HelperFunction.WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
+            WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
             string trainingFolderPath = Console.ReadLine();
 
             // Starting experiment
@@ -445,7 +445,7 @@ namespace HTMVideoLearning
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
-            string[] videoSetDirectories = HelperFunction.GetVideoSetPaths(trainingFolderPath);
+            string[] videoSetDirectories = GetVideoSetPaths(trainingFolderPath);
 
             // A list of VideoSet object, each has the Videos and the name of the folder as Label, contains all the Data in TrainingVideos,
             // this List will be the core iterator in later learning and predicting
@@ -516,11 +516,11 @@ namespace HTMVideoLearning
                 foreach (VideoSet set in videoData)
                 {
                     // Show Set Label/ Folder Name of each video set
-                    HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
+                    WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
                     foreach (NVideo vid in set.nVideoList)
                     {
                         // Name of the Video That is being trained 
-                        HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
+                        WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
                         foreach (NFrame frame in vid.nFrames)
                         {
                             //Console.WriteLine($" -- {frame.FrameKey} --");
@@ -593,8 +593,8 @@ namespace HTMVideoLearning
                             string key = GetKey(previousInputs);
                             List<Cell> actCells;
 
-                            HelperFunction.WriteLineColor($"WinnerCell Count: {lyrOut.WinnerCells.Count}", ConsoleColor.Cyan);
-                            HelperFunction.WriteLineColor($"ActiveCell Count: {lyrOut.ActiveCells.Count}", ConsoleColor.Cyan);
+                            WriteLineColor($"WinnerCell Count: {lyrOut.WinnerCells.Count}", ConsoleColor.Cyan);
+                            WriteLineColor($"ActiveCell Count: {lyrOut.ActiveCells.Count}", ConsoleColor.Cyan);
 
                             if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
                             {
@@ -606,7 +606,7 @@ namespace HTMVideoLearning
                             }
 
                             // Remember the key with corresponding SDR
-                            HelperFunction.WriteLineColor($"Current learning Key: {key}", ConsoleColor.Magenta);
+                            WriteLineColor($"Current learning Key: {key}", ConsoleColor.Magenta);
                             cls.Learn(key, actCells.ToArray());
 
                             if (learn == false)
@@ -691,7 +691,7 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video: ");
+            WriteLineColor("Drag an image as input to recall the learned Video: ");
             userInput = Console.ReadLine().Replace("\"", "");
             
             int testNo = 0;
@@ -716,9 +716,9 @@ namespace HTMVideoLearning
 
                 foreach (var serie in predictedInputValue)
                 {
-                    HelperFunction.WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
+                    WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
                     string s = serie.PredictedInput;
-                    HelperFunction.WriteLineColor(s);
+                    WriteLineColor(s);
                     Console.WriteLine("\n");
                     //Create List of NFrame to write to Video
                     List<NFrame> outputNFrameList = new();
@@ -848,13 +848,13 @@ namespace HTMVideoLearning
             if (Directory.Exists(trainingFolderPath))
             {
                 testDir = trainingFolderPath;
-                HelperFunction.WriteLineColor($"Inserted Path is found", ConsoleColor.Green);
+                WriteLineColor($"Inserted Path is found", ConsoleColor.Green);
                 Console.WriteLine($"Begin reading directory: {trainingFolderPath} ...");
             }
             else
             {
                 string currentDir = Directory.GetCurrentDirectory();
-                HelperFunction.WriteLineColor($"The inserted path for the training folder is invalid. " +
+                WriteLineColor($"The inserted path for the training folder is invalid. " +
                     $"If you have trouble adding the path, copy your training folder with name TrainingVideos to {currentDir}", ConsoleColor.Yellow);
                 // Get the root path of training videos.
                 testDir = $"{currentDir}\\TrainingVideos";
@@ -863,7 +863,7 @@ namespace HTMVideoLearning
             try
             {
                 videoSetPaths = Directory.GetDirectories(testDir, "*", SearchOption.TopDirectoryOnly);
-                HelperFunction.WriteLineColor("Complete reading directory ...");
+                WriteLineColor("Complete reading directory ...");
                 return videoSetPaths;
             }
             catch (Exception e)

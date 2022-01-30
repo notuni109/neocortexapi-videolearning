@@ -30,7 +30,13 @@ namespace VideoLibrary
     }
     public class NFrame
     {
-
+        /// <summary>
+        /// <para>
+        /// <br>Creates video from bitmap image, which contains</br>
+        /// <br>Name of the video, label, frame index, frame height and colormode</br>
+        /// <br>The Image can only be in Bitmap format</br>
+        /// </para>
+        /// </summary>
         public string FrameKey { get; }
         public int[] EncodedBitArray { get; set; }
 
@@ -136,6 +142,11 @@ namespace VideoLibrary
             }
             return result;
         }
+        /// <summary>
+        /// Creates bitmap image from an array
+        /// </summary>
+        /// <param name="EncodedBitArray">Array of encoded picture bits</param>
+        /// <returns>Bitmap image</returns>
         public Bitmap IntArrayToBitmap(int[] EncodedBitArray)
         {
             int[] rgb = { 0, 0, 0 };
