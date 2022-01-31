@@ -67,7 +67,12 @@ namespace VideoLibrary
             }
             return count;
         }
-        public void CreateConvertedVideos(string videoOutputDirectory)
+
+        /// <summary>
+        /// Extracts the frames from the video.
+        /// </summary>
+        /// <param name="videoOutputDirectory">The place where to save extracted frames.</param>
+        public void ExtractFrames(string videoOutputDirectory)
         {
             foreach(NVideo nv in nVideoList)
             {
@@ -76,7 +81,7 @@ namespace VideoLibrary
                 {
                     Directory.CreateDirectory(folderName);
                 }
-                NVideo.NFrameListToVideo(nv.nFrames,$"{folderName}"+@"\"+$"{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
+                NVideo.CreateVideoFromFrames(nv.nFrames,$"{folderName}"+@"\"+$"{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
                 if(!Directory.Exists($"{folderName}" + @"\" + $"{nv.name}"))
                 {
                     Directory.CreateDirectory($"{folderName}" + @"\" + $"{nv.name}");

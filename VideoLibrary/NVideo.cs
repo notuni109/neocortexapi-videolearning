@@ -102,7 +102,7 @@ namespace VideoLibrary
             }
             return new int[] { 4, 2, 3 };
         }
-        public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor)
+        public static void CreateVideoFromFrames(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor)
         {
             using (VideoWriter videoWriter = new($"{videoOutputPath}.mp4", -1, (int)frameRate, dimension, isColor))
             {
