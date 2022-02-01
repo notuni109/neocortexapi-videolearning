@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using VideoLibrary;
+using StartupCfg;
 
 namespace HTMVideoLearning
 {

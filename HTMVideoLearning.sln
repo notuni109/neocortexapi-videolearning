@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTMVideoLearning", "HTMVideoLearning\HTMVideoLearning.csproj", "{25F3897D-8C57-4C0E-839F-351696B24F4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoLibrary", "VideoLibrary\VideoLibrary.csproj", "{36B8F3FB-F768-4247-9BCB-1A94A441B28D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoLibraryTest", "VideoLibraryTest\VideoLibraryTest.csproj", "{AE630D92-DED7-4012-AC52-D6A254193B7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoLibraryTest", "VideoLibraryTest\VideoLibraryTest.csproj", "{AE630D92-DED7-4012-AC52-D6A254193B7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiSequenceLearningRevert", "MultiSequenceLearningRevert\MultiSequenceLearningRevert.csproj", "{9B48928C-6912-4A8C-BAFD-514700DDA9EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartupConfig", "StartupConfig\StartupConfig.csproj", "{1E1E8ED4-8D83-4524-B91F-A44002379A84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{AE630D92-DED7-4012-AC52-D6A254193B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE630D92-DED7-4012-AC52-D6A254193B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE630D92-DED7-4012-AC52-D6A254193B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B48928C-6912-4A8C-BAFD-514700DDA9EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B48928C-6912-4A8C-BAFD-514700DDA9EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B48928C-6912-4A8C-BAFD-514700DDA9EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B48928C-6912-4A8C-BAFD-514700DDA9EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E1E8ED4-8D83-4524-B91F-A44002379A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E1E8ED4-8D83-4524-B91F-A44002379A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E1E8ED4-8D83-4524-B91F-A44002379A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E1E8ED4-8D83-4524-B91F-A44002379A84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

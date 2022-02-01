@@ -1,5 +1,5 @@
 ﻿using System;
-
+using StartupCfg;
 namespace HTMVideoLearning
 {
     class Program

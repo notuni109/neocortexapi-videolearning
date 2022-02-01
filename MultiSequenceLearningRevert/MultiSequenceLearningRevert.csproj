@@ -1,16 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NeoCortexApi" Version="1.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\HTMVideoLearning\HTMVideoLearning.csproj" />
     <ProjectReference Include="..\StartupConfig\StartupConfig.csproj" />
+    <ProjectReference Include="..\VideoLibraryTest\VideoLibraryTest.csproj" />
     <ProjectReference Include="..\VideoLibrary\VideoLibrary.csproj" />
   </ItemGroup>
 
