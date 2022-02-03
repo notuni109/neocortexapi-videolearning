@@ -190,6 +190,12 @@ namespace VideoLibrary
 
             return output;
         }
+
+        /// <summary>
+        /// converting binary value to decimal
+        /// </summary>
+        /// <param name="binaryArray">Array of the picture as binary</param>
+        /// <returns>Decimal value of the binary Array</returns>
         public static int BinaryToDecimal(int[] binaryArray)
         {
             int decimalValue = 0;
@@ -201,6 +207,14 @@ namespace VideoLibrary
             }
             return decimalValue;
         }
+
+        /// <summary>
+        /// Find a partial array from an array
+        /// </summary>
+        /// <param name="data">Array</param>
+        /// <param name="index">integer starting index of the Array</param>
+        /// <param name="length">length of the partial array</param>
+        /// <returns>Return the partial array</returns>
         public static T[] SubArray<T>(T[] data, int index, int length)
         {
             T[] result = new T[length];
