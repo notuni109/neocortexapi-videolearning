@@ -34,9 +34,9 @@ namespace HTMVideoLearning
 
             CreateTemporaryFolders(out outputFolder, out convertedVideoDir, out testOutputFolder);
 
-            int frameWidth = 18;
-            int frameHeight = 18;
-            double frameRate = 12;
+            int frameWidth = 24;
+            int frameHeight = 24;
+            double frameRate = 10;
             ColorMode colorMode = ColorMode.BLACKWHITE;
 
 
@@ -78,7 +78,7 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 10;
+            int maxCycles = 1000;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -94,7 +94,7 @@ namespace HTMVideoLearning
                 learn = isInStableState = isStable;
 
                 // Clear all learned patterns in the classifier.
-                cls.ClearState();
+                //cls.ClearState();
 
             }, numOfCyclesToWaitOnChange: 50);
 
@@ -151,7 +151,8 @@ namespace HTMVideoLearning
             sw.Reset();
             sw.Start();
             for (int i = 0; i < maxCycles; i++)
-            {
+            //while (isInStableState == false)
+                {
                 List<double> setAccuracy = new();
                 HelperFunction.WriteLineColor($"------------- Cycle {i} -------------", ConsoleColor.Green);
                 // Iterating through every video set
@@ -271,7 +272,7 @@ namespace HTMVideoLearning
                         double accuracy = matches / ((double)trainingVideo.Count - 1);
                         videoAccuracy.Add(accuracy);
 
-                        if (accuracy > 0.9)
+                        if (accuracy > 0.8)
                         {
                             RecordResult(resultToWrite, resultFileName);
                         }
@@ -295,7 +296,7 @@ namespace HTMVideoLearning
                 {
                     stableAccuracyCount = 0;
                 }
-                if (stableAccuracyCount >= 40 && cycleAccuracy > 0.9)
+                if (stableAccuracyCount >= 10 && cycleAccuracy > 0.8)
                 {
                     List<string> outputLog = new();
                     if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
@@ -558,7 +559,9 @@ namespace HTMVideoLearning
                         foreach (NFrame frame in vid.nFrames)
                         {
                             //Console.WriteLine($" -- {frame.FrameKey} --");
-                            var lyrOut = layer1.Compute(frame.EncodedBitArray, learn);
+                            var lyrOut = layer1.Compute(frame.EncodedBitArray, learn) as ComputeCycle;
+                            var predictedCell = lyrOut.PredictiveCells;
+                            var a = cls.GetPredictedInputValues(predictedCell.ToArray(), 1);
                             if (isInStableState)
                                 break;
                         }

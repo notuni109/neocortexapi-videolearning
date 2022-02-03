@@ -32,8 +32,10 @@ namespace NeoCortexApiSample
             //var list2 = new double[] { 2.0, 3.0, 4.0 };
             //var list3 = new double[] { 8.0, 1.0, 2.0 };
 
-            //predictor.Reset();
-            //PredictNextElement(predictor, list1);
+            var listImage = new List<string>();
+
+            predictor.Reset();
+            PredictNextElement(predictor, listImage);
 
             //predictor.Reset();
             //PredictNextElement(predictor, list2);

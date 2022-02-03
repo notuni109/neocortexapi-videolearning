@@ -11,7 +11,7 @@ using System.Linq;
 using StartupCfg;
 using Newtonsoft.Json;
 
-namespace NeoCortexApiSample
+namespace MultiSequenceLearningRevert
 {
     /// <summary>
     /// Implements an experiment that demonstrates how to learn sequences.
@@ -19,36 +19,33 @@ namespace NeoCortexApiSample
     public class MultiSequenceLearning
     {
         /// <summary>
-        /// Runs the learning of sequences.
+        /// Run the sequence learning with the provided setting json file
         /// </summary>
-        /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
+        /// <param name="startupConfigFilePath">json setting file for startupConfig</param>
+        /// <param name="htmConfigFilePath">json setting file for htmConfig</param>
+        /// <returns></returns>
         public HtmPredictionEngine Run(string startupConfigFilePath, string htmConfigFilePath)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
+            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)} adapting Video as Sequences of Frames");
 
-            // Reading Startup Config 
+            // Deserialize Config from setting json 
             StartupConfig startupConfig = GetConfig<StartupConfig>(startupConfigFilePath);
-
-            // Reading HTMConfig from json files
             HtmConfig htmConfig = GetConfig<HtmConfig>(htmConfigFilePath);
 
             // Get Video Data From training VideoSet
-            var trainingVideos = GetTrainingVideos(startupConfig.TrainingDatasetRoot);
+            var trainingVideos = VideoLibraryAPI.GetTrainingVideos(startupConfig.TrainingDatasetRoot);
 
             return RunExperiment(startupConfig, htmConfig, trainingVideos);
         }
         // TODO: getting list<int[]> from the videos along with the videos'names label
         // suggestion: [Label__VideoName, {[1,0,1,1,0,0,0,0,0,0,0,1, ...], [1,0,1,1,0,0,0,0,0,0,0,1, ...], ...}]
-        private Dictionary<string, List<int[]>> GetTrainingVideos(string trainingDatasetRoot)
-        {
-            Dictionary<string, List<int[]>> videoSet = new Dictionary<string, List<int[]>>();
-
-        }
+        
         private T GetConfig<T> (string inputConfigFile)
         {
-            string jsonString = File.ReadAllText(inputConfigFile);
+            var jsonString = File.ReadAllText(inputConfigFile);
             T config = JsonConvert.DeserializeObject<T>(jsonString);
             return config;
+
         }
         /// <summary>
         ///
@@ -123,7 +120,7 @@ namespace NeoCortexApiSample
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                foreach (var inputs in sequences)
+                foreach (var inputs in trainingVideos)
                 {
                     foreach (var input in inputs.Value)
                     {
@@ -148,7 +145,7 @@ namespace NeoCortexApiSample
 
             //
             // Loop over all sequences.
-            foreach (var sequenceKeyPair in sequences)
+            foreach (var sequenceKeyPair in trainingVideos)
             {
                 Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
 
@@ -273,7 +270,7 @@ namespace NeoCortexApiSample
 
             Debug.WriteLine("------------ END ------------");
 
-            return null;// new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
+            return new HtmPredictionEngine { Layer = layer1, Classifier = cls, Connections = mem };
         }
 
         public class HtmPredictionEngine
@@ -283,7 +280,7 @@ namespace NeoCortexApiSample
                 var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
                 ((TemporalMemory)tm.Value).Reset(this.Connections);
             }
-            public List<ClassifierResult<string>> Predict(int[] input)
+            public ClassifierResult<string>> Predict(int[] input)
             {
                 var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;
 
