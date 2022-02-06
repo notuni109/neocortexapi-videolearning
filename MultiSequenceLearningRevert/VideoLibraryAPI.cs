@@ -15,7 +15,7 @@ namespace MultiSequenceLearningRevert
         /// </summary>
         /// <param name="trainingDatasetRoot">Training folder path, this contain subfolder. The names of the sub folder represents the label of the videos it contains</param>
         /// <returns></returns>
-        public static Dictionary<string, List<int[]>> GetTrainingVideos(string trainingDatasetRoot, StartupConfig config)
+        public static Dictionary<string, List<int[]>> GetTrainingVideos(StartupConfig config)
         {
             Dictionary<string, List<int[]>> videoSet = new Dictionary<string, List<int[]>>();
 

@@ -1,10 +1,7 @@
-﻿using NeoCortexApi.Encoders;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using static NeoCortexApiSample.MultiSequenceLearning;
-using VideoLibrary;
+﻿using System.Diagnostics;
+using MultiSequenceLearningRevert;
+using static MultiSequenceLearningRevert.MultiSequenceLearning;
+
 namespace NeoCortexApiSample
 {
     class Program
@@ -14,7 +11,10 @@ namespace NeoCortexApiSample
         /// You must start this code in debugger to follow the trace.
         /// and TM.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">
+        /// <br>first argument is startUpConfig Json</br>
+        /// <br>second argument is the htmConfig Json</br>
+        /// </param>
         static void Main(string[] args)
         {
             RunMultiSequenceLearningExperiment(args);
@@ -24,6 +24,7 @@ namespace NeoCortexApiSample
         {
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
+
             var predictor = experiment.Run(args[0], args[1]);
 
 
@@ -32,10 +33,10 @@ namespace NeoCortexApiSample
             //var list2 = new double[] { 2.0, 3.0, 4.0 };
             //var list3 = new double[] { 8.0, 1.0, 2.0 };
 
-            var listImage = new List<string>();
+            //var listImage = new List<string>();
 
-            predictor.Reset();
-            PredictNextElement(predictor, listImage);
+            //predictor.Reset();
+            //PredictNextElement(predictor, listImage);
 
             //predictor.Reset();
             //PredictNextElement(predictor, list2);

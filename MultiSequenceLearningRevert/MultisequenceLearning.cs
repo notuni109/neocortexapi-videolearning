@@ -1,13 +1,8 @@
 ﻿using NeoCortexApi;
 using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Network;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-
 using StartupCfg;
 using Newtonsoft.Json;
 
@@ -26,15 +21,20 @@ namespace MultiSequenceLearningRevert
         /// <returns></returns>
         public HtmPredictionEngine Run(string startupConfigFilePath, string htmConfigFilePath)
         {
-            Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)} adapting Video as Sequences of Frames");
+            HelperFunction.RenderHelloScreen();
 
-            // Deserialize Config from setting json 
+            // 1. Deserialize Config from setting json 
             StartupConfig startupConfig = GetConfig<StartupConfig>(startupConfigFilePath);
             HtmConfig htmConfig = GetConfig<HtmConfig>(htmConfigFilePath);
 
-            // Get Video Data From training VideoSet
-            var trainingVideos = VideoLibraryAPI.GetTrainingVideos(startupConfig.TrainingDatasetRoot);
+            // 2. Get Video Data From training VideoSet
+            var trainingVideos = VideoLibraryAPI.GetTrainingVideos(startupConfig);
+            htmConfig.InputDimensions = startupConfig.GetEncodedBitDimension();
 
+            // 3. Prepare Directories for Learning
+            HelperFunction.CreateTemporaryFolders(ref startupConfig);
+
+            // 4. RunExperiment
             return RunExperiment(startupConfig, htmConfig, trainingVideos);
         }
         // TODO: getting list<int[]> from the videos along with the videos'names label
@@ -63,7 +63,7 @@ namespace MultiSequenceLearningRevert
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
 
-            var numUniqueInputs = GetTotalNumberOfFrames(trainingVideos);
+            var numUniqueInputs = HelperFunction.GetTotalNumberOfFrames(trainingVideos);
 
             CortexLayer<object, object> layer1 = new CortexLayer<object, object>("L1");
 
