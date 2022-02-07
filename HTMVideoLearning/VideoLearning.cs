@@ -470,8 +470,8 @@ namespace HTMVideoLearning
             }
 
             // Video Parameter 
-            int frameWidth = 18;
-            int frameHeight = 18;
+            int frameWidth = 32;
+            int frameHeight = 32;
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 10;
             
@@ -552,15 +552,17 @@ namespace HTMVideoLearning
                     HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
                     foreach (NVideo vid in set.nVideoList)
                     {
+                        Console.WriteLine($" Video: {vid.name}.");
                         // Name of the Video That is being trained 
                         HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
                         foreach (NFrame frame in vid.nFrames)
                         {
-                            //Console.WriteLine($" -- {frame.FrameKey} --");
+                            Console.Write(".");
                             var lyrOut = layer1.Compute(frame.EncodedBitArray, learn);
                             if (isInStableState)
                                 break;
                         }
+                        Console.WriteLine();
                     }
                 }
 
@@ -596,6 +598,8 @@ namespace HTMVideoLearning
                     // Thus Learning with sp alone was kept
                     double lastCycleAccuracy = 0;
                     int saturatedAccuracyCount = 0;
+                    bool isCompletedSuccessfully = false;
+
                     for (int i = 0; i < maxCycles; i++)
                     {
                         matches = 0; 
@@ -683,6 +687,7 @@ namespace HTMVideoLearning
                         accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
                         //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
 
+               
                         Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
                         if(accuracy == lastCycleAccuracy)
                         {
@@ -704,6 +709,9 @@ namespace HTMVideoLearning
                                 outputLog.Add($"Elapsed time: {sw.ElapsedMilliseconds / 1000 / 60} min.");
                                 outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
                                 RecordResult(outputLog, fileName);
+
+                                isCompletedSuccessfully = true;
+
                                 break;
                             }
                         }
@@ -713,6 +721,10 @@ namespace HTMVideoLearning
                         tm.Reset(mem);
                     }
 
+                    if (isCompletedSuccessfully == false)
+                    {
+                        Console.WriteLine($"The experiment didn't complete successully. Exit after {maxCycles}!");
+                    }
                     Console.WriteLine("------------ END ------------");
                     previousInputs.Clear();
                 }
@@ -815,7 +827,7 @@ namespace HTMVideoLearning
             {
                 Random = new ThreadSafeRandom(42),
 
-                CellsPerColumn = 30,
+                CellsPerColumn = 15,
                 GlobalInhibition = true,
                 //LocalAreaDensity = -1,
                 NumActiveColumnsPerInhArea = 0.02 * numColumns[0],
@@ -823,10 +835,10 @@ namespace HTMVideoLearning
                 //InhibitionRadius = 15,
 
                 MaxBoost = 10.0,
-                //DutyCyclePeriod = 25,
-                //MinPctOverlapDutyCycles = 0.75,
+                DutyCyclePeriod = 100,
+                MinPctOverlapDutyCycles = 0.75,
                 MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]),
-
+                StimulusThreshold = (int)0.05* numColumns[0],
                 //ActivationThreshold = 15,
                 //ConnectedPermanence = 0.5,
 
