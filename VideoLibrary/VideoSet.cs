@@ -5,7 +5,6 @@ using System.Drawing;
 
 namespace VideoLibrary
 {
-
     /// <summary>
     /// <para>VideoSet is created to represent an folder of videos</para>
     /// <para>Each videos will be read to a Video object</para>
@@ -71,19 +70,19 @@ namespace VideoLibrary
         {
             foreach(NVideo nv in nVideoList)
             {
-                string folderName = $"{videoOutputDirectory}"+@"\"+$"{nv.label}";
+                string folderName = $@"{videoOutputDirectory}\{nv.label}";
                 if (!Directory.Exists(folderName))
                 {
                     Directory.CreateDirectory(folderName);
                 }
-                NVideo.NFrameListToVideo(nv.nFrames,$"{folderName}"+@"\"+$"{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
-                if(!Directory.Exists($"{folderName}" + @"\" + $"{nv.name}"))
+                NVideo.NFrameListToVideo(nv.nFrames,$@"{folderName}\{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
+                if(!Directory.Exists($@"{folderName}\{nv.name}"))
                 {
-                    Directory.CreateDirectory($"{folderName}" + @"\" + $"{nv.name}");
+                    Directory.CreateDirectory($@"{folderName}\{nv.name}");
                 }
                 for(int i = 0;i<nv.nFrames.Count;i+=1 )
                 {
-                    nv.nFrames[i].SaveFrame($"{folderName}" + @"\" + $"{nv.name}" + @"\" + $"{nv.nFrames[i].FrameKey}.png");
+                    nv.nFrames[i].SaveFrame($@"{folderName}\{nv.name}\{nv.nFrames[i].FrameKey}.png");
                 }
             }
         }

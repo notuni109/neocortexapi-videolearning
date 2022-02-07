@@ -17,14 +17,15 @@ namespace HTMVideoLearning
     {
         public static void Run1()
         {
-
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
+            //Fetching training dataset
             WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} CodeBreakers");
             WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
             string trainingFolderPath = Console.ReadLine();
 
+            //Here Starting the Clock to measure training time
             sw.Start();
             // Define first the desired properties of the frames
             string outputFolder = "Run1ExperimentOutput";
@@ -32,12 +33,12 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory($"{outputFolder}");
             }
-            string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
+            string convertedVideoDir = $@"{outputFolder}\Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
             }
-            string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
+            string testOutputFolder = $@"{outputFolder}\TEST";
             if (!Directory.Exists(testOutputFolder))
             {
                 Directory.CreateDirectory(testOutputFolder);
@@ -251,11 +252,11 @@ namespace HTMVideoLearning
                         int correctlyPredictedFrame = 0;
 
                         List<string> resultToWrite = new();
-                        if(!Directory.Exists($"{outputFolder}" + @"\" + $"ResultLog"))
+                        if(!Directory.Exists($@"{outputFolder}\ResultLog"))
                         {
-                            Directory.CreateDirectory($"{outputFolder}" + @"\" + $"ResultLog");
+                            Directory.CreateDirectory($@"{outputFolder}\ResultLog");
                         }
-                        string resultFileName = $"{outputFolder}" + @"\" + $"ResultLog" + @"\" + $"{nv.label}_{nv.name}_Cycle{i}";
+                        string resultFileName = $@"{outputFolder}\ResultLog\{nv.label}_{nv.name}_Cycle{i}";
 
                         for (int j = 0; j < possibleOutcomeSerie.Count - 1; j += 1)
                         {
@@ -302,11 +303,11 @@ namespace HTMVideoLearning
                 if(stableAccuracyCount >= 40 && cycleAccuracy> 0.9)
                 {
                     List<string> outputLog = new();
-                    if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                    if (!Directory.Exists($@"{outputFolder}\TEST"))
                     {
-                        Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                        Directory.CreateDirectory($@"{outputFolder}\TEST");
                     }
-                    string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"saturatedAccuracyLog_Run1";
+                    string fileName = $@"{outputFolder}\TEST\saturatedAccuracyLog_Run1";
                     outputLog.Add($"Result Log for reaching saturated accuracy at cycleAccuracy {cycleAccuracy}");
 
                     outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
@@ -325,11 +326,11 @@ namespace HTMVideoLearning
                 else if(i == maxCycles - 1)
                 {
                     List<string> outputLog = new();
-                    if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                    if (!Directory.Exists($@"{outputFolder}\TEST"))
                     {
-                        Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                        Directory.CreateDirectory($@"{outputFolder}\TEST");
                     }
-                    string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"MaxCycleReached";
+                    string fileName = $@"{outputFolder}\TEST\MaxCycleReached";
                     outputLog.Add($"Result Log for stopping experiment with accuracy at cycleAccuracy {cycleAccuracy}");
 
                     outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
@@ -349,7 +350,7 @@ namespace HTMVideoLearning
             // Testing Section
             string userInput;
             
-            WriteLineColor("Drag a Frame(Picture) to recall the learned videos : ", ConsoleColor.Cyan);
+            WriteLineColor("Drag a Frame(Picture) to recall the learned videos (To Quit Write Q): ", ConsoleColor.Cyan);
             int testNo = 0;
 
             do
@@ -398,14 +399,14 @@ namespace HTMVideoLearning
                             currentFrameKey = predictedNext[0].PredictedInput;
                         }
                     }
-                    string dir = $"{testOutputFolder}" + @"\" + $"Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
+                    string dir = $@"{testOutputFolder}\Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
                     if (!Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
                     NVideo.NFrameListToVideo(
                         frameSequence,
-                        $"{dir}" + @"\" + $"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}",
+                        $@"{dir}\testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}",
                         (int)(videoData[0].nVideoList[0].frameRate),
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);
@@ -430,7 +431,7 @@ namespace HTMVideoLearning
 
             // Output folder initiation
             string outputFolder = "Run2ExperimentOutput";
-            string convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
+            string convertedVideoDir = $@"{outputFolder}\Converted";
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
@@ -558,7 +559,7 @@ namespace HTMVideoLearning
                     int maxMatchCnt = 0;
                     //
                     // Now training with SP+TM. SP is pretrained on the given VideoSet.
-                    // There is a little different between a input pattern set and an input video set,
+                    // There is a little difference between a input pattern set and an input video set,
                     // The reason is because a video consists of continously altering frame, not distinct values like the sequence learning of Scalar value.
                     // Thus Learning with sp alone was kept
                     double lastCycleAccuracy = 0;
@@ -663,7 +664,7 @@ namespace HTMVideoLearning
                                 {
                                     Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
                                 }
-                                string fileName = $"{outputFolder}" + @"\" + "TEST" + @"\" + $"saturatedAccuracyLog_{nv.label}_{nv.name}";
+                                string fileName = $@"{outputFolder}\TEST\saturatedAccuracyLog_{nv.label}_{nv.name}";
                                 outputLog.Add($"Result Log for reaching saturated accuracy at {accuracy}");
                                 outputLog.Add($"Label: {nv.label}");
                                 outputLog.Add($"Video Name: {nv.name}");
@@ -686,19 +687,19 @@ namespace HTMVideoLearning
             }
             //Testing Section
             string userInput;
-            string testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
+            string testOutputFolder = $@"{outputFolder}\TEST";
             if (!Directory.Exists(testOutputFolder))
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            WriteLineColor("Drag an image as input to recall the learned Video: ");
+            WriteLineColor("Drag an image as input to recall the learned Video (To quit use Q): ");
             userInput = Console.ReadLine().Replace("\"", "");
             
             int testNo = 0;
 
             do
             {
-                string Outputdir = $"{testOutputFolder}" + @"\" + $"Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
+                string Outputdir = $@"{testOutputFolder}\Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
                 if (!Directory.Exists(Outputdir))
                 {
                     Directory.CreateDirectory(Outputdir);
@@ -706,7 +707,7 @@ namespace HTMVideoLearning
                 testNo += 1;
                 // Save the input Frame as NFrame
                 NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
-                inputFrame.SaveFrame(Outputdir+@"\"+$"Converted_{Path.GetFileName(userInput)}");
+                inputFrame.SaveFrame(Outputdir+$@"\Converted_{Path.GetFileName(userInput)}");
                 // Compute the SDR of the Frame
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
 
@@ -716,7 +717,7 @@ namespace HTMVideoLearning
 
                 foreach (var serie in predictedInputValue)
                 {
-                    WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
+                    WriteLineColor("Predicted Serie:", ConsoleColor.Green);
                     string s = serie.PredictedInput;
                     WriteLineColor(s);
                     Console.WriteLine("\n");
@@ -746,7 +747,7 @@ namespace HTMVideoLearning
                     // Create output video
                     NVideo.NFrameListToVideo(
                         outputNFrameList,
-                        $"{Outputdir}" + @"\" + $"testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4",
+                        $@"{Outputdir}\testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4",
                         (int)videoData[0].nVideoList[0].frameRate,
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);
@@ -818,10 +819,10 @@ namespace HTMVideoLearning
         }
         /// <summary>
         /// Print a line in Console with color and/or hightlight
-        /// </summary>
         /// <param name="str">string to print</param>
         /// <param name="foregroundColor">Text color</param>
         /// <param name="backgroundColor">Hightlight Color</param>
+        /// </summary>
         public static void WriteLineColor(
             string str,
             ConsoleColor foregroundColor = ConsoleColor.White,
@@ -833,33 +834,31 @@ namespace HTMVideoLearning
             Console.ResetColor();
         }
         /// <summary>
-        /// Return an array of directories inside the passed parent directories
-        /// In this Experiment:
-        /// Return an array of each video set 's directory 
+        /// Gets directories inside the passed parent directory
+        /// <param name="folderPath">Absolute path of the parent folder</param>
+        /// <returns>Returns an array of each video set's directory</returns>
         /// </summary>
-        /// <param name="trainingFolderPath"></param>
-        /// <returns></returns>
-        public static string[] GetVideoSetPaths(string trainingFolderPath)
+        public static string[] GetVideoSetPaths(string folderPath)
         {
             // remove the two outer quotation marks
-            trainingFolderPath = trainingFolderPath.Replace("\"", "");
+            folderPath = folderPath.Replace("\"", "");
             string[] videoSetPaths = Array.Empty<string>();
             string testDir;
-            if (Directory.Exists(trainingFolderPath))
+            if (Directory.Exists(folderPath))
             {
-                testDir = trainingFolderPath;
+                testDir = folderPath;
                 WriteLineColor($"Inserted Path is found", ConsoleColor.Green);
-                Console.WriteLine($"Begin reading directory: {trainingFolderPath} ...");
+                Console.WriteLine($"Begin reading directory: {folderPath} ...");
             }
             else
             {
                 string currentDir = Directory.GetCurrentDirectory();
                 WriteLineColor($"The inserted path for the training folder is invalid. " +
                     $"If you have trouble adding the path, copy your training folder with name TrainingVideos to {currentDir}", ConsoleColor.Yellow);
-                // Get the root path of training videos.
+                // Get the root path of training videos
                 testDir = $"{currentDir}\\TrainingVideos";
             }
-            // Get all the folders that contain video sets under TrainingVideos/
+            // Get all the folders that contain video sets under TrainingVideos
             try
             {
                 videoSetPaths = Directory.GetDirectories(testDir, "*", SearchOption.TopDirectoryOnly);
