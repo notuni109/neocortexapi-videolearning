@@ -13,7 +13,7 @@ namespace AppLogger
 			{
 				logBuilder.SetMinimumLevel(LogLevel.Debug);
 				logBuilder.AddDebug();
-                logBuilder.AddConsole();
+				logBuilder.AddConsole();
 
 				var path = Directory.GetCurrentDirectory();
 				logBuilder.AddFile(Path.Combine(path, "logs", "Log.txt"));
