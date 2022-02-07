@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoLibrary", "VideoLibrar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoLibraryTest", "VideoLibraryTest\VideoLibraryTest.csproj", "{AE630D92-DED7-4012-AC52-D6A254193B7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppLogger", "AppLogger\AppLogger.csproj", "{94C48F17-542C-4D0E-B61B-7F09D20ED5CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{AE630D92-DED7-4012-AC52-D6A254193B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE630D92-DED7-4012-AC52-D6A254193B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE630D92-DED7-4012-AC52-D6A254193B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C48F17-542C-4D0E-B61B-7F09D20ED5CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C48F17-542C-4D0E-B61B-7F09D20ED5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C48F17-542C-4D0E-B61B-7F09D20ED5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C48F17-542C-4D0E-B61B-7F09D20ED5CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
