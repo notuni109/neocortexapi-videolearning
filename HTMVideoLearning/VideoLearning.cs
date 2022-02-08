@@ -703,6 +703,10 @@ namespace HTMVideoLearning
 
             do
             {
+               if (userInput == "Q")
+                {
+                    break;
+                }
                 string Outputdir = Path.Combine(testOutputFolder,$"Predicted from {Path.GetFileNameWithoutExtension(userInput)}");
                 if (!Directory.Exists(Outputdir))
                 {
