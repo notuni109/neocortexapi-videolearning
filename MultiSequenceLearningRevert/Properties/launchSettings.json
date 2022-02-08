@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MultiSequenceLearningRevert": {
+      "commandName": "Project",
+      "commandLineArgs": "startupConfig.json htmConfig.json"
+    }
+  }
+}

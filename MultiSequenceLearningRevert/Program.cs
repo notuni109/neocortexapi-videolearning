@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
 using MultiSequenceLearningRevert;
 using static MultiSequenceLearningRevert.MultiSequenceLearning;
+using StartupCfg;
+using Newtonsoft.Json;
+using NeoCortexApi.Entities;
 
 namespace NeoCortexApiSample
 {
@@ -22,21 +25,20 @@ namespace NeoCortexApiSample
 
         private static void RunMultiSequenceLearningExperiment(string[] args)
         {
+
+            StartupConfig startupConfig = GetConfig<StartupConfig>(args[0]);
+
+            HtmConfig htmConfig = GetConfig<HtmConfig>(args[1]);
+            htmConfig.NumInputs = startupConfig.frameWidth * startupConfig.frameHeight;
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
 
-            var predictor = experiment.Run(args[0], args[1]);
+            var predictor = experiment.Run(startupConfig, htmConfig);
 
+            var listImage = VideoLibraryAPI.GetTestVideo("E:\\TutorJob se-cloud-2021-2022\\neocortexapi-videolearning\\SmallTrainingSet\\Circle",4,10,startupConfig);
 
-
-            //var list1 = new NVideo().nFrames();
-            //var list2 = new double[] { 2.0, 3.0, 4.0 };
-            //var list3 = new double[] { 8.0, 1.0, 2.0 };
-
-            //var listImage = new List<string>();
-
-            //predictor.Reset();
-            //PredictNextElement(predictor, listImage);
+            predictor.Reset();
+            PredictNextElement(predictor, listImage);
 
             //predictor.Reset();
             //PredictNextElement(predictor, list2);
@@ -69,6 +71,14 @@ namespace NeoCortexApiSample
             }
 
             Debug.WriteLine("------------------------------");
+        }
+
+        private static T GetConfig<T>(string inputConfigFile)
+        {
+            var jsonString = File.ReadAllText(inputConfigFile);
+            T config = JsonConvert.DeserializeObject<T>(jsonString);
+            return config;
+
         }
     }
 }

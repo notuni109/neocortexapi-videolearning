@@ -4,11 +4,11 @@ namespace StartupCfg
     public class StartupConfig
     {
 
-        int frameWidth = 18;
-        int frameHeight = 18;
-        double frameRate = 12;
+        public int frameWidth = 24;
+        public int frameHeight = 24;
+        public double frameRate = 0;
 
-        ColorMode colorMode = ColorMode.BLACKWHITE;
+        public ColorMode colorMode = ColorMode.BLACKWHITE;
         public string outputFolder { get; set; }
         public string convertedVideoDir { get; set; }
         public string testOutputFolder { get; set; }

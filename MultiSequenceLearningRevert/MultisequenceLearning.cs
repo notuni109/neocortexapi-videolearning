@@ -19,17 +19,12 @@ namespace MultiSequenceLearningRevert
         /// <param name="startupConfigFilePath">json setting file for startupConfig</param>
         /// <param name="htmConfigFilePath">json setting file for htmConfig</param>
         /// <returns></returns>
-        public HtmPredictionEngine Run(string startupConfigFilePath, string htmConfigFilePath)
+        public HtmPredictionEngine Run(StartupConfig startupConfig, HtmConfig htmConfig)
         {
             HelperFunction.RenderHelloScreen();
 
-            // 1. Deserialize Config from setting json 
-            StartupConfig startupConfig = GetConfig<StartupConfig>(startupConfigFilePath);
-            HtmConfig htmConfig = GetConfig<HtmConfig>(htmConfigFilePath);
-
             // 2. Get Video Data From training VideoSet
             var trainingVideos = VideoLibraryAPI.GetTrainingVideos(startupConfig);
-            htmConfig.InputDimensions = startupConfig.GetEncodedBitDimension();
 
             // 3. Prepare Directories for Learning
             HelperFunction.CreateTemporaryFolders(ref startupConfig);
@@ -39,14 +34,8 @@ namespace MultiSequenceLearningRevert
         }
         // TODO: getting list<int[]> from the videos along with the videos'names label
         // suggestion: [Label__VideoName, {[1,0,1,1,0,0,0,0,0,0,0,1, ...], [1,0,1,1,0,0,0,0,0,0,0,1, ...], ...}]
-        
-        private T GetConfig<T> (string inputConfigFile)
-        {
-            var jsonString = File.ReadAllText(inputConfigFile);
-            T config = JsonConvert.DeserializeObject<T>(jsonString);
-            return config;
 
-        }
+        
         /// <summary>
         ///
         /// </summary>
@@ -120,14 +109,15 @@ namespace MultiSequenceLearningRevert
 
                 Debug.WriteLine($"-------------- Newborn Cycle {cycle} ---------------");
 
-                foreach (var inputs in trainingVideos)
+                foreach (var video in trainingVideos)
                 {
-                    foreach (var input in inputs.Value)
+                    int count = 0;
+                    foreach (var encodedFrame in video.Value)
                     {
-                        Debug.WriteLine($" -- {inputs.Key} - {input} --");
+                        Debug.WriteLine($" -- {video.Key}_Frame_{count} --");
 
-                        var lyrOut = layer1.Compute(input, true);
-
+                        var lyrOut = layer1.Compute(encodedFrame, true);
+                        count++;
                         if (isInStableState)
                             break;
                     }
@@ -138,18 +128,18 @@ namespace MultiSequenceLearningRevert
             }
 
             // Clear all learned patterns in the classifier.
-            cls.ClearState();
+            //cls.ClearState();
 
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
             //
             // Loop over all sequences.
-            foreach (var sequenceKeyPair in trainingVideos)
+            foreach (var video in trainingVideos)
             {
-                Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
+                Debug.WriteLine($"-------------- video name: {video.Key} ---------------");
 
-                int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
+                int maxPrevInputs = video.Value.Count - 1;
 
                 List<string> previousInputs = new List<string>();
 
@@ -168,15 +158,17 @@ namespace MultiSequenceLearningRevert
                     Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
                     Debug.WriteLine("");
 
-                    foreach (var input in sequenceKeyPair.Value)
+                    int frameIndex = 0;
+                    foreach (var input in video.Value)
                     {
-                        Debug.WriteLine($"-------------- {input} ---------------");
+                        string frameKey = $"{ video.Key}_Frame_{ frameIndex}";
+                        Debug.WriteLine($"-------------- {frameKey} ---------------");
 
                         var lyrOut = layer1.Compute(input, true) as ComputeCycle;
 
                         var activeColumns = layer1.GetResult("sp") as int[];
 
-                        previousInputs.Add(input.ToString());
+                        previousInputs.Add(frameKey);
                         if (previousInputs.Count > (maxPrevInputs + 1))
                             previousInputs.RemoveAt(0);
 
@@ -188,7 +180,7 @@ namespace MultiSequenceLearningRevert
                         if (previousInputs.Count < maxPrevInputs)
                             continue;
 
-                        string key = GetKey(previousInputs, input, sequenceKeyPair.Key);
+                        string key = GetKey(previousInputs, video.Key);
 
                         List<Cell> actCells;
 
@@ -237,11 +229,11 @@ namespace MultiSequenceLearningRevert
                     }
 
                     // The first element (a single element) in the sequence cannot be predicted
-                    double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
+                    double maxPossibleAccuraccy = (double)((double)video.Value.Count - 1) / (double)video.Value.Count * 100.0;
 
-                    double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
+                    double accuracy = (double)matches / (double)video.Value.Count * 100.0;
 
-                    Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
+                    Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {video.Value.Count}\t {accuracy}%");
 
                     if (accuracy >= maxPossibleAccuraccy)
                     {
@@ -253,7 +245,7 @@ namespace MultiSequenceLearningRevert
                         if (maxMatchCnt >= 30)
                         {
                             sw.Stop();
-                            Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
+                            Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {video.Key} learning time: {sw.Elapsed}.");
                             break;
                         }
                     }
@@ -280,11 +272,11 @@ namespace MultiSequenceLearningRevert
                 var tm = this.Layer.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
                 ((TemporalMemory)tm.Value).Reset(this.Connections);
             }
-            public ClassifierResult<string>> Predict(int[] input)
+            public List<HtmClassifier<string, ComputeCycle>.ClassifierResult> Predict(int[] input)
             {
                 var lyrOut = this.Layer.Compute(input, false) as ComputeCycle;
 
-                List<ClassifierResult<string>> predictedInputValues = this.Classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+                var predictedInputValues = this.Classifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
 
                 return predictedInputValues;
             }
@@ -299,7 +291,7 @@ namespace MultiSequenceLearningRevert
         /// <summary>
         /// Gets the number of all unique inputs.
         /// </summary>
-        /// <param name="sequences">Alle sequences.</param>
+        /// <param name = "sequences" > Alle sequences.</param>
         /// <returns></returns>
         private int GetNumberOfInputs(Dictionary<string, List<object[]>> sequences)
         {
@@ -323,7 +315,7 @@ namespace MultiSequenceLearningRevert
         /// <param name="input"></param>
         /// <param name="sequence"></param>
         /// <returns></returns>
-        private static string GetKey(List<string> prevInputs, double input, string sequence)
+        private static string GetKey(List<string> prevInputs, string sequence)
         {
             string key = String.Empty;
 

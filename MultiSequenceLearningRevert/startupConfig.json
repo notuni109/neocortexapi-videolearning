@@ -1,0 +1,7 @@
+{
+  "TemporalMemory": {},
+  "frameWidth": 24,
+  "frameHeight": 24,
+  "frameRate": 12,
+  "TrainingDatasetRoot": "E:\\TutorJob se-cloud-2021-2022\\neocortexapi-videolearning\\SmallTrainingSet"
+}

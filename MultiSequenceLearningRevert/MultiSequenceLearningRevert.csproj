@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NeoCortexApi" Version="1.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
@@ -16,6 +17,15 @@
     <ProjectReference Include="..\StartupConfig\StartupConfig.csproj" />
     <ProjectReference Include="..\VideoLibraryTest\VideoLibraryTest.csproj" />
     <ProjectReference Include="..\VideoLibrary\VideoLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="htmConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="startupConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
