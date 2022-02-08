@@ -89,7 +89,7 @@ namespace VideoLibrary
             vd.Dispose();
             return videoBitmapArray;
         }
-        public int[] GetEncodedFrame(string key)
+        /*public int[] GetEncodedFrame(string key)
         {
             foreach (NFrame nf in nFrames)
             {
@@ -99,17 +99,17 @@ namespace VideoLibrary
                 }
             }
             return new int[] { 4, 2, 3 };
-        }
+        }*/
 
         /// <summary>
         /// Method to create video from Image Frames list
+        /// </summary>
         /// <param name="bitmapList">indexing a list of objects for sorting,searching and manipulating</param>
         /// <param name="videoOutputPath">Folder path of the output of the video</param>
         /// <param name="frameRate">Rate of the frame in fps</param>
         /// <param name="dimension">Height & Width of Image Frames</param>
         /// <param name="isColor">Color of the images with boolean value True or False as colored or balck&white</param>
         /// <param name="codec">Coding decoding technique which requires four char values associated with VideoWriter.Fourcc method</param>
-        /// </summary>
         public static void NFrameListToVideo(List<NFrame> bitmapList, string videoOutputPath, int frameRate, Size dimension, bool isColor, char[] codec = null )
         {
             //Set the default codec of fourcc

@@ -48,7 +48,7 @@ namespace HTMVideoLearning
             // Drag an Image as input, The trained layer will try to predict the next Frame, then uses the next frame label - framekey series
             // to recreate the video under Run2Experiment/TEST/
 
-            //VideoLearning.Run2();
+            // VideoLearning.Run2();
         }
     }
 }

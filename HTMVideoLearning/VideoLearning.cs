@@ -33,12 +33,12 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory($"{outputFolder}");
             }
-            string convertedVideoDir = $@"{outputFolder}\Converted";
+            string convertedVideoDir = Path.Combine(outputFolder, "Converted");
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
             }
-            string testOutputFolder = $@"{outputFolder}\TEST";
+            string testOutputFolder = Path.Combine(outputFolder,"TEST");
             if (!Directory.Exists(testOutputFolder))
             {
                 Directory.CreateDirectory(testOutputFolder);
@@ -85,7 +85,7 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 10;
+            int maxCycles = 100;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 *3 , (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -252,11 +252,11 @@ namespace HTMVideoLearning
                         int correctlyPredictedFrame = 0;
 
                         List<string> resultToWrite = new();
-                        if(!Directory.Exists($@"{outputFolder}\ResultLog"))
+                        if(!Directory.Exists(Path.Combine(outputFolder,"ResultLog")))
                         {
-                            Directory.CreateDirectory($@"{outputFolder}\ResultLog");
+                            Directory.CreateDirectory(Path.Combine(outputFolder,"ResultLog"));
                         }
-                        string resultFileName = $@"{outputFolder}\ResultLog\{nv.label}_{nv.name}_Cycle{i}";
+                        string resultFileName = Path.Combine(outputFolder,"ResultLog",$"{nv.label}_{nv.name}_Cycle{i}");
 
                         for (int j = 0; j < possibleOutcomeSerie.Count - 1; j += 1)
                         {
@@ -303,11 +303,11 @@ namespace HTMVideoLearning
                 if(stableAccuracyCount >= 40 && cycleAccuracy> 0.9)
                 {
                     List<string> outputLog = new();
-                    if (!Directory.Exists($@"{outputFolder}\TEST"))
+                    if (!Directory.Exists(Path.Combine(outputFolder,"TEST")))
                     {
-                        Directory.CreateDirectory($@"{outputFolder}\TEST");
+                        Directory.CreateDirectory(Path.Combine(outputFolder,"TEST"));
                     }
-                    string fileName = $@"{outputFolder}\TEST\saturatedAccuracyLog_Run1";
+                    string fileName = Path.Combine(outputFolder,"TEST","saturatedAccuracyLog_Run1");
                     outputLog.Add($"Result Log for reaching saturated accuracy at cycleAccuracy {cycleAccuracy}");
 
                     outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
@@ -326,11 +326,11 @@ namespace HTMVideoLearning
                 else if(i == maxCycles - 1)
                 {
                     List<string> outputLog = new();
-                    if (!Directory.Exists($@"{outputFolder}\TEST"))
+                    if (!Directory.Exists(Path.Combine(outputFolder,"TEST")))
                     {
-                        Directory.CreateDirectory($@"{outputFolder}\TEST");
+                        Directory.CreateDirectory(Path.Combine(outputFolder,"TEST"));
                     }
-                    string fileName = $@"{outputFolder}\TEST\MaxCycleReached";
+                    string fileName = Path.Combine(outputFolder,"TEST","MaxCycleReached");
                     outputLog.Add($"Result Log for stopping experiment with accuracy at cycleAccuracy {cycleAccuracy}");
 
                     outputLog.Add($"reaching stable after enter newborn cycle {newbornCycle}.");
@@ -359,6 +359,10 @@ namespace HTMVideoLearning
                 while (userInput == "")
                 {
                     userInput = Console.ReadLine().Replace("\"", "");
+                }
+                if (userInput == "Q")
+                {
+                    break;
                 }
                 testNo += 1;
                 NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
@@ -399,14 +403,14 @@ namespace HTMVideoLearning
                             currentFrameKey = predictedNext[0].PredictedInput;
                         }
                     }
-                    string dir = $@"{testOutputFolder}\Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
+                    string dir = Path.Combine(testOutputFolder,$"Predicted from {Path.GetFileNameWithoutExtension(userInput)}");
                     if (!Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
                     NVideo.NFrameListToVideo(
                         frameSequence,
-                        $@"{dir}\testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}",
+                        Path.Combine(dir,$"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}"),
                         (int)(videoData[0].nVideoList[0].frameRate),
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);
@@ -431,7 +435,7 @@ namespace HTMVideoLearning
 
             // Output folder initiation
             string outputFolder = "Run2ExperimentOutput";
-            string convertedVideoDir = $@"{outputFolder}\Converted";
+            string convertedVideoDir = Path.Combine(outputFolder,"Converted");
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
@@ -660,11 +664,11 @@ namespace HTMVideoLearning
                             if (saturatedAccuracyCount >= 50 && lastCycleAccuracy>80)
                             {
                                 List<string> outputLog = new();
-                                if(!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                                if(!Directory.Exists(Path.Combine($"{outputFolder}","TEST")))
                                 {
-                                    Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
+                                    Directory.CreateDirectory(Path.Combine($"{outputFolder}","TEST"));
                                 }
-                                string fileName = $@"{outputFolder}\TEST\saturatedAccuracyLog_{nv.label}_{nv.name}";
+                                string fileName = Path.Combine(outputFolder,"TEST",$"saturatedAccuracyLog_{nv.label}_{nv.name}");
                                 outputLog.Add($"Result Log for reaching saturated accuracy at {accuracy}");
                                 outputLog.Add($"Label: {nv.label}");
                                 outputLog.Add($"Video Name: {nv.name}");
@@ -687,7 +691,7 @@ namespace HTMVideoLearning
             }
             //Testing Section
             string userInput;
-            string testOutputFolder = $@"{outputFolder}\TEST";
+            string testOutputFolder = Path.Combine(outputFolder,"TEST");
             if (!Directory.Exists(testOutputFolder))
             {
                 Directory.CreateDirectory(testOutputFolder);
@@ -699,7 +703,7 @@ namespace HTMVideoLearning
 
             do
             {
-                string Outputdir = $@"{testOutputFolder}\Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
+                string Outputdir = Path.Combine(testOutputFolder,$"Predicted from {Path.GetFileNameWithoutExtension(userInput)}");
                 if (!Directory.Exists(Outputdir))
                 {
                     Directory.CreateDirectory(Outputdir);
@@ -707,7 +711,7 @@ namespace HTMVideoLearning
                 testNo += 1;
                 // Save the input Frame as NFrame
                 NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
-                inputFrame.SaveFrame(Outputdir+$@"\Converted_{Path.GetFileName(userInput)}");
+                inputFrame.SaveFrame(Path.Combine(Outputdir , $"Converted_{Path.GetFileName(userInput)}"));
                 // Compute the SDR of the Frame
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
 
@@ -747,7 +751,7 @@ namespace HTMVideoLearning
                     // Create output video
                     NVideo.NFrameListToVideo(
                         outputNFrameList,
-                        $@"{Outputdir}\testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4",
+                        Path.Combine(Outputdir,$"testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4"),
                         (int)videoData[0].nVideoList[0].frameRate,
                         new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
                         true);

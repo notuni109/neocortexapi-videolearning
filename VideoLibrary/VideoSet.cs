@@ -70,19 +70,19 @@ namespace VideoLibrary
         {
             foreach(NVideo nv in nVideoList)
             {
-                string folderName = $@"{videoOutputDirectory}\{nv.label}";
+                string folderName = Path.Combine(videoOutputDirectory,"{nv.label}");
                 if (!Directory.Exists(folderName))
                 {
                     Directory.CreateDirectory(folderName);
                 }
-                NVideo.NFrameListToVideo(nv.nFrames,$@"{folderName}\{nv.name}",(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
-                if(!Directory.Exists($@"{folderName}\{nv.name}"))
+                NVideo.NFrameListToVideo(nv.nFrames, Path.Combine(folderName,$"{nv.name}"),(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
+                if(!Directory.Exists(Path.Combine(folderName,$"{nv.name}")))
                 {
-                    Directory.CreateDirectory($@"{folderName}\{nv.name}");
+                    Directory.CreateDirectory(Path.Combine(folderName,$"{nv.name}"));
                 }
                 for(int i = 0;i<nv.nFrames.Count;i+=1 )
                 {
-                    nv.nFrames[i].SaveFrame($@"{folderName}\{nv.name}\{nv.nFrames[i].FrameKey}.png");
+                    nv.nFrames[i].SaveFrame(Path.Combine(folderName,$"{nv.name}",$"{nv.nFrames[i].FrameKey}.png"));
                 }
             }
         }
