@@ -66,6 +66,10 @@ namespace VideoLibrary
             }
             return count;
         }
+        /// <summary>
+        /// Convert videos and store in the output Directory
+        /// </summary>
+        /// <param name="videoOutputDirectory"> Path of the video Output Directory</param>
         public void CreateConvertedVideos(string videoOutputDirectory)
         {
             foreach(NVideo nv in nVideoList)
@@ -86,6 +90,10 @@ namespace VideoLibrary
                 }
             }
         }
+        /// <summary>
+        /// Get the video frame of the specified frame key
+        /// </summary>
+        /// <param name="currentFrameKey"> Current Framekey of the video </param>
         public NFrame GetNFrameFromFrameKey(string currentFrameKey)
         {
             foreach (var nv in nVideoList)
