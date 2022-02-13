@@ -43,14 +43,24 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            int frameWidth = 18;
+            //Initiate configuration
+            /*int frameWidth = 18;
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 12;
             // adding condition for 
             // Define HTM parameters
             int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
-            int[] numColumns = { 1024 };
+            int[] numColumns = { 1024 }; */
+            VideoConfiguration vidConf = new VideoConfiguration(18, 18, 12.0, ColorMode.BLACKWHITE, 1024);
+            int frameWidth = vidConf.FrameWidth;
+            int frameHeight = vidConf.FrameHeight;
+            ColorMode colorMode = vidConf.ColorMode;
+            double frameRate = vidConf.FrameRate;
+            // adding condition for 
+            // Define HTM parameters
+            int[] inputBits = vidConf.InputBits;
+            int[] numColumns = vidConf.NumberOfColumns;
 
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
@@ -442,10 +452,16 @@ namespace HTMVideoLearning
             }
 
             // Video Parameter 
-            int frameWidth = 18;
+/*            int frameWidth = 18;
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
-            double frameRate = 10;
+            double frameRate = 10;*/  
+            VideoConfiguration vidConf = new VideoConfiguration(18, 18, 10.0, ColorMode.BLACKWHITE, 1024);
+            
+            int frameWidth = vidConf.FrameWidth;
+            int frameHeight = vidConf.FrameHeight;
+            ColorMode colorMode = vidConf.ColorMode;
+            double frameRate = vidConf.FrameRate;
             
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
