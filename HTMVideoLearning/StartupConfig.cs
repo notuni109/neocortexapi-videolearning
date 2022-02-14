@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VideoLibrary;
 
 namespace HTMVideoLearning
 {
     public class StartupConfig
     {
 
-        //int frameWidth = 18;
-        //int frameHeight = 18;
-        //double frameRate = 12;
+        int frameWidth = 18;
+        int frameHeight = 18;
+        double frameRate = 12;
         //ColorMode colorMode = ColorMode.BLACKWHITE;
 
 
@@ -24,5 +25,10 @@ namespace HTMVideoLearning
         /// The root folder where training videos are stored.
         /// </summary>
         public string TrainingDatasetRoot { get; set; }
+
+        /// <summary>
+        /// test file path array after the experiment runs
+        /// </summary>
+        public string[] TestFiles { get; set; }
     }
 }

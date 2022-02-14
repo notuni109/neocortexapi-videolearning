@@ -1,11 +1,18 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace HTMVideoLearning
 {
     class Program
     {
+
         static void Main(string[] args)
         {
+            // read startup Config File
+            string jsonString = File.ReadAllText(args[0]);
+            StartupConfig startupCfg = JsonConvert.DeserializeObject<StartupConfig>(jsonString);
+
             // Toogle between the two test Run1 or Run2
 
             // Run1:
@@ -48,7 +55,7 @@ namespace HTMVideoLearning
             // Drag an Image as input, The trained layer will try to predict the next Frame, then uses the next frame label - framekey series
             // to recreate the video under Run2Experiment/TEST/
 
-            VideoLearning.Run2();
+            VideoLearning.Run2(startupCfg);
         }
     }
 }

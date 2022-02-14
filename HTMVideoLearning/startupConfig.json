@@ -1,0 +1,16 @@
+{
+
+  "frameWidth": 18,
+  "frameHeight": 18,
+  "frameRate": 12,
+  "TrainingDatasetRoot": "SmallTrainingSet",
+  "TestFiles": [
+    "Run2ExperimentOutput\\Converted\\Circle\\circle\\Circle_circle_3.png",
+    "Run2ExperimentOutput\\Converted\\Circle\\circle\\Circle_circle_2.png",
+    "Run2ExperimentOutput\\Converted\\Rectangle\\rectangle\\Rectangle_rectangle_28.png",
+    "Run2ExperimentOutput\\Converted\\Rectangle\\rectangle\\Rectangle_rectangle_18.png",
+    "Run2ExperimentOutput\\Converted\\Triangle\\triangle\\Triangle_triangle_23.png",
+    "Run2ExperimentOutput\\Converted\\Triangle\\triangle\\Triangle_triangle_0.png"
+  ]
+
+}

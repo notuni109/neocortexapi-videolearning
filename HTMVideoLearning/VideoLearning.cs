@@ -15,16 +15,17 @@ namespace HTMVideoLearning
 {
     class VideoLearning
     {
+        #region Learning with HtmClassifier key as FrameKey
         public static void Run1(StartupConfig startupCfg = null, HtmConfig htmCfg = null)
         {
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
-            
+
             RenderHelloScreen();
 
             string trainingFolderPath = startupCfg?.TrainingDatasetRoot ?? null;
 
-            if(String.IsNullOrEmpty(trainingFolderPath))
+            if (String.IsNullOrEmpty(trainingFolderPath))
                 trainingFolderPath = Console.ReadLine();
 
             sw.Start();
@@ -412,51 +413,26 @@ namespace HTMVideoLearning
             }
             while (userInput != "Q");
         }
+        #endregion
 
-        private static void RenderHelloScreen()
+        #region Learning with HTMClassifier key as Series of FrameKey (Sequence Learning)
+        public static void Run2(StartupConfig startupCfg = null, HtmConfig htmCfg = null)
         {
-            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Noath2302");
-            HelperFunction.WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
-        }
+            RenderHelloScreen();
 
-
-        /// <summary>
-        /// Create folders required for the experiment.
-        /// </summary>
-        /// <param name="outputFolder"></param>
-        /// <param name="convertedVideoDir"></param>
-        /// <param name="testOutputFolder"></param>
-        private static void CreateTemporaryFolders(out string outputFolder, out string convertedVideoDir, out string testOutputFolder)
-        {
-            // Define first the desired properties of the frames
-            outputFolder = "Run1ExperimentOutput";
-            if (!Directory.Exists($"{outputFolder}"))
-            {
-                Directory.CreateDirectory($"{outputFolder}");
-            }
-            convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
-            if (!Directory.Exists($"{convertedVideoDir}"))
-            {
-                Directory.CreateDirectory($"{convertedVideoDir}");
-            }
-            testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
-            if (!Directory.Exists(testOutputFolder))
-            {
-                Directory.CreateDirectory(testOutputFolder);
-            }
-        }
-
-        public static void Run2()
-        {
+            //initiate time capture
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
-            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
+            string trainingFolderPath = startupCfg?.TrainingDatasetRoot ?? null;
 
-            // The current training Folder is located in HTMVideoLlearning/
-            // SmallTrainingSet ; Training Videos ; oneVideoTrainingSet
-            HelperFunction.WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
-            string trainingFolderPath = Console.ReadLine();
+            if (String.IsNullOrEmpty(trainingFolderPath))
+            {
+                HelperFunction.WriteLineColor("training Dataset path not detectected in startupConfig.json", ConsoleColor.Blue);
+                HelperFunction.WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
+                HelperFunction.WriteLineColor("sample set SmallTrainingSet/ is located in root directory", ConsoleColor.Blue);
+                trainingFolderPath = Console.ReadLine();
+            }
 
             // Starting experiment
             sw.Start();
@@ -474,7 +450,7 @@ namespace HTMVideoLearning
             int frameHeight = 32;
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 10;
-            
+
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
@@ -515,20 +491,20 @@ namespace HTMVideoLearning
             int maxCycles = 1000;
             int newbornCycle = 0;
 
-            HomeostaticPlasticityController hpa = new(mem, 30 * 150*3, (isStable, numPatterns, actColAvg, seenInputs) =>
-            {
-               if (isStable)
-                   // Event should be fired when entering the stable state.
-                   Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-               else
-                   // Ideal SP should never enter unstable state after stable state.
-                   Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+            HomeostaticPlasticityController hpa = new(mem, 30 * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
+              {
+                  if (isStable)
+                    // Event should be fired when entering the stable state.
+                    Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                  else
+                    // Ideal SP should never enter unstable state after stable state.
+                    Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
-               // We are not learning in instable state.
-               learn = isInStableState = isStable;
+                // We are not learning in instable state.
+                learn = isInStableState = isStable;
 
-               // Clear all learned patterns in the classifier.
-               //cls.ClearState();
+                // Clear all learned patterns in the classifier.
+                //cls.ClearState();
 
             }, numOfCyclesToWaitOnChange: 50);
 
@@ -542,7 +518,7 @@ namespace HTMVideoLearning
             //
             ///*
             //for (int i = 0; i < maxCycles; i++)
-            while(isInStableState == false)
+            while (isInStableState == false)
             {
                 newbornCycle++;
                 Console.WriteLine($"-------------- Newborn Cycle {newbornCycle} ---------------");
@@ -602,7 +578,7 @@ namespace HTMVideoLearning
 
                     for (int i = 0; i < maxCycles; i++)
                     {
-                        matches = 0; 
+                        matches = 0;
                         cycle++;
 
                         Console.WriteLine($"-------------- Cycle {cycle} ---------------");
@@ -681,23 +657,23 @@ namespace HTMVideoLearning
                                 lastPredictedValue.Clear();
                             }
                         }
-                        
-                        double accuracy;
-                        
-                        accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
-                        //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
 
-               
+                        double accuracy;
+
+                        accuracy = (double)matches / ((double)nv.nFrames.Count - 1.0) * 100.0; // Use if with reset
+                                                                                               //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
+
+
                         Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
-                        if(accuracy == lastCycleAccuracy)
+                        if (accuracy == lastCycleAccuracy)
                         {
                             // The learning may result in saturated accuracy
                             // Unable to learn to higher accuracy, Exit
                             saturatedAccuracyCount += 1;
-                            if (saturatedAccuracyCount >= 50 && lastCycleAccuracy>80)
+                            if (saturatedAccuracyCount >= 50 && lastCycleAccuracy > 80)
                             {
                                 List<string> outputLog = new();
-                                if(!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
+                                if (!Directory.Exists($"{outputFolder}" + @"\" + "TEST"))
                                 {
                                     Directory.CreateDirectory($"{outputFolder}" + @"\" + "TEST");
                                 }
@@ -736,81 +712,119 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video: ");
-            userInput = Console.ReadLine().Replace("\"", "");
-            
+
             int testNo = 0;
 
-            do
+            // Test from startupConfig.json
+            foreach (var testFilePath in startupCfg.TestFiles)
             {
-                string Outputdir = $"{testOutputFolder}" + @"\" + $"Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
-                if (!Directory.Exists(Outputdir))
+                testNo = PredictImageInput(videoData, cls, layer1, testFilePath, testOutputFolder, testNo);
+            }
+
+
+            // Manual input from user
+            HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video or type \"q\" to puit: ");
+
+            userInput = Console.ReadLine().Replace("\"", "");
+
+            while (userInput!="q")
+            {
+                testNo = PredictImageInput(videoData, cls, layer1, userInput, testOutputFolder, testNo);
+                userInput = Console.ReadLine().Replace("\"", "");
+            }
+        }
+
+        #endregion
+
+        #region private help method
+        /// <summary>
+        /// Predict series from input Image.
+        /// <br>Process:</br>
+        /// <br>Binarize input image</br>
+        /// <br>Convert the binarized image to SDR via Spatial Pooler</br>
+        /// <br>Get Predicted Cells from Compute output </br>
+        /// <br>Compare the predicted Cells with learned HTMClassifier</br>
+        /// <br>Create predicted image sequence as Video from classifier output and video database videoData </br>
+        /// </summary>
+        /// <param name="frameWidth">image framewidth</param>
+        /// <param name="frameHeight"></param>
+        /// <param name="colorMode"></param>
+        /// <param name="videoData"></param>
+        /// <param name="cls"></param>
+        /// <param name="layer1"></param>
+        /// <param name="userInput"></param>
+        /// <param name="testOutputFolder"></param>
+        /// <param name="testNo"></param>
+        /// <returns></returns>
+        private static int PredictImageInput(List<VideoSet> videoData, HtmClassifier<string, ComputeCycle> cls, CortexLayer<object, object> layer1, string userInput, string testOutputFolder, int testNo)
+        {
+            // TODO: refactor video library for easier access to these properties
+            int frameWidth = videoData[0].nVideoList[0].frameWidth;
+            int frameHeight = videoData[0].nVideoList[0].frameHeight;
+            ColorMode colorMode = videoData[0].nVideoList[0].colorMode;
+
+            string Outputdir = $"{testOutputFolder}" + @"\" + $"Predicted from {Path.GetFileNameWithoutExtension(userInput)}";
+            if (!Directory.Exists(Outputdir))
+            {
+                Directory.CreateDirectory(Outputdir);
+            }
+            testNo += 1;
+            // Save the input Frame as NFrame
+            NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
+            inputFrame.SaveFrame(Outputdir + @"\" + $"Converted_{Path.GetFileName(userInput)}");
+            // Compute the SDR of the Frame
+            var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
+
+            // Use HTMClassifier to calculate 5 possible next Cells Arrays
+            var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 5);
+
+
+            foreach (var serie in predictedInputValue)
+            {
+                HelperFunction.WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
+                string s = serie.PredictedInput;
+                HelperFunction.WriteLineColor(s);
+                Console.WriteLine("\n");
+                //Create List of NFrame to write to Video
+                List<NFrame> outputNFrameList = new();
+                string Label = "";
+                List<string> frameKeyList = s.Split("-").ToList();
+                foreach (string frameKey in frameKeyList)
                 {
-                    Directory.CreateDirectory(Outputdir);
-                }
-                testNo += 1;
-                // Save the input Frame as NFrame
-                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
-                inputFrame.SaveFrame(Outputdir+@"\"+$"Converted_{Path.GetFileName(userInput)}");
-                // Compute the SDR of the Frame
-                var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
-
-                // Use HTMClassifier to calculate 5 possible next Cells Arrays
-                var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 5);
-
-
-                foreach (var serie in predictedInputValue)
-                {
-                    HelperFunction.WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
-                    string s = serie.PredictedInput;
-                    HelperFunction.WriteLineColor(s);
-                    Console.WriteLine("\n");
-                    //Create List of NFrame to write to Video
-                    List<NFrame> outputNFrameList = new();
-                    string Label = "";
-                    List<string> frameKeyList = s.Split("-").ToList();
-                    foreach (string frameKey in frameKeyList)
+                    foreach (var vs in videoData)
                     {
-                        foreach (var vs in videoData)
+                        foreach (var vd in vs.nVideoList)
                         {
-                            foreach (var vd in vs.nVideoList)
+                            foreach (var nf in vd.nFrames)
                             {
-                                foreach (var nf in vd.nFrames)
+                                if (nf.FrameKey == frameKey)
                                 {
-                                    if (nf.FrameKey == frameKey)
-                                    {
-                                        Label = nf.label;
-                                        outputNFrameList.Add(nf);
-                                        break;
-                                    }
+                                    Label = nf.label;
+                                    outputNFrameList.Add(nf);
+                                    break;
                                 }
                             }
                         }
                     }
-                        
-                    // Create output video
-                    NVideo.CreateVideoFromFrames(
-                        outputNFrameList,
-                        $"{Outputdir}" + @"\" + $"testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4",
-                        (int)videoData[0].nVideoList[0].frameRate,
-                        new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
-                        true);
                 }
-                // Enter loop for more input
-                userInput = "";
-                while (userInput == "")
-                {
-                    userInput = Console.ReadLine().Replace("\"", "");
-                }
+
+                // Create output video
+                NVideo.CreateVideoFromFrames(
+                    outputNFrameList,
+                    $"{Outputdir}" + @"\" + $"testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4",
+                    (int)videoData[0].nVideoList[0].frameRate,
+                    new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
+                    true);
             }
-            while (userInput != "Q");
+
+            return testNo;
         }
         /// <summary>
         /// Writing experiment result to write to a text file
         /// </summary>
         /// <param name="possibleOutcomeSerie"></param>
         /// <param name="inputVideo"></param>
-        public static void RecordResult(List<string> result, string fileName)
+        private static void RecordResult(List<string> result, string fileName)
         {
             File.WriteAllLines($"{fileName}.txt", result);
         }
@@ -838,7 +852,7 @@ namespace HTMVideoLearning
                 DutyCyclePeriod = 100,
                 MinPctOverlapDutyCycles = 0.75,
                 MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]),
-                StimulusThreshold = (int)0.05* numColumns[0],
+                StimulusThreshold = (int)0.05 * numColumns[0],
                 //ActivationThreshold = 15,
                 //ConnectedPermanence = 0.5,
 
@@ -861,5 +875,40 @@ namespace HTMVideoLearning
             string key = string.Join("-", prevInputs);
             return key;
         }
+
+        // Hello screen
+        // TODO: adding instruction/ introduction/ experiment flow
+        private static void RenderHelloScreen()
+        {
+            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Noath2302");
+        }
+
+
+        /// <summary>
+        /// Create folders required for the experiment.
+        /// </summary>
+        /// <param name="outputFolder"></param>
+        /// <param name="convertedVideoDir"></param>
+        /// <param name="testOutputFolder"></param>
+        private static void CreateTemporaryFolders(out string outputFolder, out string convertedVideoDir, out string testOutputFolder)
+        {
+            // Define first the desired properties of the frames
+            outputFolder = "Run1ExperimentOutput";
+            if (!Directory.Exists($"{outputFolder}"))
+            {
+                Directory.CreateDirectory($"{outputFolder}");
+            }
+            convertedVideoDir = $"{outputFolder}" + @"\" + "Converted";
+            if (!Directory.Exists($"{convertedVideoDir}"))
+            {
+                Directory.CreateDirectory($"{convertedVideoDir}");
+            }
+            testOutputFolder = $"{outputFolder}" + @"\" + "TEST";
+            if (!Directory.Exists(testOutputFolder))
+            {
+                Directory.CreateDirectory(testOutputFolder);
+            }
+        }
+        #endregion
     }
 }
