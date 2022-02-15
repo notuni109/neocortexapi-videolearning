@@ -43,7 +43,6 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            //Initiate configuration
             /*int frameWidth = 18;
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
@@ -52,15 +51,8 @@ namespace HTMVideoLearning
             // Define HTM parameters
             int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
             int[] numColumns = { 1024 }; */
+            //Initiate configuration with frame width, frame height, frame rate, color mode and number of columns
             VideoConfiguration vidConf = new VideoConfiguration(18, 18, 12.0, ColorMode.BLACKWHITE, 1024);
-            int frameWidth = vidConf.FrameWidth;
-            int frameHeight = vidConf.FrameHeight;
-            ColorMode colorMode = vidConf.ColorMode;
-            double frameRate = vidConf.FrameRate;
-            // adding condition for 
-            // Define HTM parameters
-            int[] inputBits = vidConf.InputBits;
-            int[] numColumns = vidConf.NumberOfColumns;
 
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
@@ -74,12 +66,12 @@ namespace HTMVideoLearning
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetPaths)
             {
-                VideoSet vs = new(path, colorMode, frameWidth, frameHeight, frameRate);
+                VideoSet vs = new(path, vidConf.ColorMode, vidConf.FrameWidth, vidConf.FrameHeight, vidConf.FrameRate);
                 videoData.Add(vs);
                 vs.CreateConvertedVideos(convertedVideoDir);
             }
             //Initiating HTM
-            HtmConfig cfg = GetHTM(inputBits, numColumns);
+            HtmConfig cfg = GetHTM(vidConf.InputBits, vidConf.NumberOfColumns);
 
             var mem = new Connections(cfg);
 
@@ -95,7 +87,7 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 100;
+            int maxCycles = 10;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 *3 , (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -375,7 +367,7 @@ namespace HTMVideoLearning
                     break;
                 }
                 testNo += 1;
-                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
+                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, vidConf.FrameWidth, vidConf.FrameHeight, vidConf.ColorMode);
                 // Computing user input frame with trained layer 
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
                 var predictedInputValue = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 5);
@@ -422,8 +414,12 @@ namespace HTMVideoLearning
                         frameSequence,
                         Path.Combine(dir,$"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}"),
                         (int)(videoData[0].nVideoList[0].frameRate),
-                        new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
+                        new Size((int)vidConf.FrameWidth, (int)vidConf.FrameHeight),
                         true);
+                    if(nextPredictedFrameExists == false)
+                    {
+                        WriteLineColor("Drag a Frame(Picture) to recall the learned videos (To Quit Write Q): ", ConsoleColor.Cyan);
+                    }
                 }
             }
             while (userInput != "Q");
@@ -452,16 +448,12 @@ namespace HTMVideoLearning
             }
 
             // Video Parameter 
-/*            int frameWidth = 18;
+           /*int frameWidth = 18;
             int frameHeight = 18;
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 10;*/  
-            VideoConfiguration vidConf = new VideoConfiguration(18, 18, 10.0, ColorMode.BLACKWHITE, 1024);
-            
-            int frameWidth = vidConf.FrameWidth;
-            int frameHeight = vidConf.FrameHeight;
-            ColorMode colorMode = vidConf.ColorMode;
-            double frameRate = vidConf.FrameRate;
+            //Initiate configuration
+            VideoConfiguration vidConf2 = new VideoConfiguration(18, 18, 10.0, ColorMode.BLACKWHITE, 1024);
             
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
@@ -475,18 +467,16 @@ namespace HTMVideoLearning
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetDirectories)
             {
-                VideoSet vs = new(path, colorMode, frameWidth, frameHeight, frameRate);
+                VideoSet vs = new(path, vidConf2.ColorMode, vidConf2.FrameWidth, vidConf2.FrameHeight, vidConf2.FrameRate);
                 videoData.Add(vs);
                 // Output converted Videos to Output/Converted/
                 vs.CreateConvertedVideos(convertedVideoDir);
             }
 
             // Define HTM parameters
-            int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
-            int[] numColumns = { 1024 };
 
             //Initiating HTM
-            HtmConfig cfg = GetHTM(inputBits, numColumns);
+            HtmConfig cfg = GetHTM(vidConf2.InputBits, vidConf2.NumberOfColumns);
 
             var mem = new Connections(cfg);
 
@@ -500,7 +490,7 @@ namespace HTMVideoLearning
 
             bool learn = true;
 
-            int maxCycles = 1000;
+            int maxCycles = 10;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, 30 * 150*3, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -712,7 +702,7 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            WriteLineColor("Drag an image as input to recall the learned Video (To quit use Q): ");
+            WriteLineColor("Drag an image as input to recall the learned Video (To quit use Q): ", ConsoleColor.Green);
             userInput = Console.ReadLine().Replace("\"", "");
             
             int testNo = 0;
@@ -730,7 +720,7 @@ namespace HTMVideoLearning
                 }
                 testNo += 1;
                 // Save the input Frame as NFrame
-                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, frameWidth, frameHeight, colorMode);
+                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, vidConf2.FrameWidth, vidConf2.FrameHeight, vidConf2.ColorMode);
                 inputFrame.SaveFrame(Path.Combine(Outputdir , $"Converted_{Path.GetFileName(userInput)}"));
                 // Compute the SDR of the Frame
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
@@ -773,11 +763,12 @@ namespace HTMVideoLearning
                         outputNFrameList,
                         Path.Combine(Outputdir,$"testNo_{testNo}_Label{Label}_similarity{serie.Similarity}_No of same bit{serie.NumOfSameBits}.mp4"),
                         (int)videoData[0].nVideoList[0].frameRate,
-                        new Size((int)videoData[0].nVideoList[0].frameWidth, (int)videoData[0].nVideoList[0].frameHeight),
+                        new Size((int)vidConf2.FrameWidth, (int)vidConf2.FrameHeight),
                         true);
                 }
                 // Enter loop for more input
                 userInput = "";
+                WriteLineColor("Drag a Frame(Picture) to recall the learned videos (To Quit Write Q): ", ConsoleColor.Cyan);
                 while (userInput == "")
                 {
                     userInput = Console.ReadLine().Replace("\"", "");

@@ -22,6 +22,7 @@ namespace HTMVideoLearning
             this.FrameRate = FrameRate;
             this.ColorMode = colorMode;
             this.NumberOfColumns = new int[] { NumberOfColumns };
+            //Calculate inputbits and then turn it into an array as it is required for htm configuration
             int inputBits = this.FrameWidth * this.FrameHeight * (int)this.ColorMode;
             this.InputBits= new int[] { inputBits } ;
         }
