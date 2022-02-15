@@ -19,7 +19,7 @@ namespace VideoLibraryTest
             // export Video to outputFilePath
             string outputFilePath = "testFile//ReadVideo//output_mp4.mp4";
             List<Bitmap> bitmapList = new();
-            NVideo.NFrameListToVideo(nv.nFrames,outputFilePath,24,new Size( 24,24),false);
+            NVideo.CreateVideoFromFrames(nv.nFrames,outputFilePath,24,new Size( 24,24),false);
         }
         [TestMethod]
         public void BitmapResize()

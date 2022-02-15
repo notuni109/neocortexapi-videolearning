@@ -18,7 +18,7 @@ namespace VideoLibrary
         public List<NFrame> nFrames;
         public string label;
 
-        private readonly ColorMode colorMode;
+        public readonly ColorMode colorMode;
         public readonly int frameWidth;
         public readonly int frameHeight;
         public readonly double frameRate;
