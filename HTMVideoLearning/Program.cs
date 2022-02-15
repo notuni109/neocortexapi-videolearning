@@ -12,6 +12,7 @@ namespace HTMVideoLearning
             // read startup Config File
             string jsonString = File.ReadAllText(args[0]);
             StartupConfig startupCfg = JsonConvert.DeserializeObject<StartupConfig>(jsonString);
+            //Console.WriteLine(startupCfg.ToString());
 
             // Toogle between the two test Run1 or Run2
 

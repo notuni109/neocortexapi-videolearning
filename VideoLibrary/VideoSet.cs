@@ -70,16 +70,16 @@ namespace VideoLibrary
         /// Convert videos and store in the output Directory
         /// </summary>
         /// <param name="videoOutputDirectory"> Path of the video Output Directory</param>
-        public void CreateConvertedVideos(string videoOutputDirectory)
+        public void ExtractFrames(string videoOutputDirectory)
         {
             foreach(NVideo nv in nVideoList)
             {
-                string folderName = Path.Combine(videoOutputDirectory,"{nv.label}");
+                string folderName = Path.Combine(videoOutputDirectory,nv.label);
                 if (!Directory.Exists(folderName))
                 {
                     Directory.CreateDirectory(folderName);
                 }
-                NVideo.NFrameListToVideo(nv.nFrames, Path.Combine(folderName,$"{nv.name}"),(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
+                NVideo.CreateVideoFromFrames(nv.nFrames, Path.Combine(folderName,$"{nv.name}"),(int)nv.frameRate,new Size(nv.frameWidth,nv.frameHeight),true);
                 if(!Directory.Exists(Path.Combine(folderName,$"{nv.name}")))
                 {
                     Directory.CreateDirectory(Path.Combine(folderName,$"{nv.name}"));

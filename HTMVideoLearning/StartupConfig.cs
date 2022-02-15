@@ -14,8 +14,6 @@ namespace HTMVideoLearning
         int frameHeight = 18;
         double frameRate = 12;
         //ColorMode colorMode = ColorMode.BLACKWHITE;
-
-
         //// adding condition for 
         //// Define HTM parameters
         /////int[] inputBits = { frameWidth * frameHeight * (int)colorMode };

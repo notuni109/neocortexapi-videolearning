@@ -34,7 +34,7 @@ namespace HTMVideoLearning
 
             CreateTemporaryFolders(out outputFolder, out convertedVideoDir, out testOutputFolder);
 
-            int frameWidth = 18;
+/*            int frameWidth = 18;
             int frameHeight = 18;
             double frameRate = 12;
             ColorMode colorMode = ColorMode.BLACKWHITE;
@@ -43,14 +43,14 @@ namespace HTMVideoLearning
             // adding condition for 
             // Define HTM parameters
             int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
-            int[] numColumns = { 1024 }; */
+            int[] numColumns = { 1024 };*/
             //Initiate configuration with frame width, frame height, frame rate, color mode and number of columns
             VideoConfiguration vidConf = new VideoConfiguration(18, 18, 12.0, ColorMode.BLACKWHITE, 1024);
 
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
-            string[] videoDatasetRootFolder = HelperFunction.GetVideoSetPaths(trainingFolderPath);
+            string[] videoDatasetRootFolder = GetVideoSetPaths(trainingFolderPath);
             string[] videoSetPaths = GetVideoSetPaths(trainingFolderPath);
 
             // A list of VideoSet object, each has the Videos and the name of the folder as Label, contains all the Data in TrainingVideos,
@@ -65,7 +65,7 @@ namespace HTMVideoLearning
                 vs.ExtractFrames(convertedVideoDir);
             }
             //Initiating HTM
-            HtmConfig cfg = GetHTM(vidConf.InputBits, vidConf.NumberOfColumns);
+            HtmConfig cfg = GetHTMConfig(vidConf.InputBits, vidConf.NumberOfColumns);
 
             var mem = new Connections(cfg);
 
@@ -261,7 +261,7 @@ namespace HTMVideoLearning
                             string message = $"Expected : {trainingVideo[j].FrameKey} ||| GOT {string.Join(" --- ", possibleOutcomeSerie[j])}";
                             if (possibleOutcomeSerie[j].Contains(trainingVideo[j].FrameKey))
                             {
-                                correctlyPredictedFrame += 1;
+                                matches += 1;
                                 WriteLineColor(message, ConsoleColor.Green);
                                 resultToWrite.Add($"FOUND:   {message}");
                             }
@@ -386,7 +386,7 @@ namespace HTMVideoLearning
                                 break;
                             }
                         }
-                        WriteLineColor($"Predicted nextFrame: {currentFrameKey}", ConsoleColor.Green);
+                        WriteLineColor($"Predicted nextFrame: {predictedFrameKey}", ConsoleColor.Green);
 
                         var computedSDR = layer1.Compute(currentFrame.EncodedBitArray, false) as ComputeCycle;
                         var predictedNext = cls.GetPredictedInputValues(computedSDR.PredictiveCells.ToArray(), 3);
@@ -410,7 +410,7 @@ namespace HTMVideoLearning
 
                     NVideo.CreateVideoFromFrames(
                         frameSequence,
-                        Path.Combine(dir,$"testNo_{testNo}_FirstPossibility_{possibleFrame.Similarity}_FirstLabel_{possibleFrame.PredictedInput}"),
+                        Path.Combine(dir,$"testNo_{testNo}_FirstPossibility_{clsPredictionRes.Similarity}_FirstLabel_{clsPredictionRes.PredictedInput}"),
                         (int)(videoData[0].nVideoList[0].frameRate),
                         new Size((int)vidConf.FrameWidth, (int)vidConf.FrameHeight),
                         true);
@@ -437,9 +437,9 @@ namespace HTMVideoLearning
 
             if (String.IsNullOrEmpty(trainingFolderPath))
             {
-                HelperFunction.WriteLineColor("training Dataset path not detectected in startupConfig.json", ConsoleColor.Blue);
-                HelperFunction.WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
-                HelperFunction.WriteLineColor("sample set SmallTrainingSet/ is located in root directory", ConsoleColor.Blue);
+                WriteLineColor("training Dataset path not detectected in startupConfig.json", ConsoleColor.Blue);
+                WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
+                WriteLineColor("sample set SmallTrainingSet/ is located in root directory", ConsoleColor.Blue);
                 trainingFolderPath = Console.ReadLine();
             }
 
@@ -483,7 +483,7 @@ namespace HTMVideoLearning
             // Define HTM parameters
 
             //Initiating HTM
-            HtmConfig cfg = GetHTM(vidConf2.InputBits, vidConf2.NumberOfColumns);
+            HtmConfig cfg = GetHTMConfig(vidConf2.InputBits, vidConf2.NumberOfColumns);
 
             var mem = new Connections(cfg);
 
@@ -526,8 +526,9 @@ namespace HTMVideoLearning
             // Training SP to get stable. New-born stage.
             //
             ///*
-            //for (int i = 0; i < maxCycles; i++)
-            while (isInStableState == false)
+            ///normally change it to while, only for less working time use the for loop
+            for (int i = 0; i < maxCycles; i++)
+            /*while (isInStableState == false)*/
             {
                 newbornCycle++;
                 Console.WriteLine($"-------------- Newborn Cycle {newbornCycle} ---------------");
@@ -575,7 +576,7 @@ namespace HTMVideoLearning
 
                     sw.Reset();
                     sw.Start();
-                    int maxMatchCnt = 0;
+                    /*int maxMatchCnt = 0;*/
                     //
                     // Now training with SP+TM. SP is pretrained on the given VideoSet.
                     // There is a little difference between a input pattern set and an input video set,
@@ -709,6 +710,7 @@ namespace HTMVideoLearning
                     if (isCompletedSuccessfully == false)
                     {
                         Console.WriteLine($"The experiment didn't complete successully. Exit after {maxCycles}!");
+              
                     }
                     Console.WriteLine("------------ END ------------");
                     previousInputs.Clear();
@@ -732,11 +734,11 @@ namespace HTMVideoLearning
 
 
             // Manual input from user
-            HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video or type \"q\" to puit: ");
+            WriteLineColor("Drag an image as input to recall the learned Video or type (Write Q to quit): ");
 
             userInput = Console.ReadLine().Replace("\"", "");
 
-            while (userInput!="q")
+            while (userInput!="Q")
             {
                 testNo = PredictImageInput(videoData, cls, layer1, userInput, testOutputFolder, testNo);
                 userInput = Console.ReadLine().Replace("\"", "");
@@ -790,9 +792,9 @@ namespace HTMVideoLearning
 
             foreach (var serie in predictedInputValue)
             {
-                HelperFunction.WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
+                WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
                 string s = serie.PredictedInput;
-                HelperFunction.WriteLineColor(s);
+                WriteLineColor(s);
                 Console.WriteLine("\n");
                 //Create List of NFrame to write to Video
                 List<NFrame> outputNFrameList = new();
@@ -889,7 +891,7 @@ namespace HTMVideoLearning
         // TODO: adding instruction/ introduction/ experiment flow
         private static void RenderHelloScreen()
         {
-            HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Noath2302");
+            WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} CodeBrakers");
         }
 
 
