@@ -27,7 +27,7 @@
     <None Update="SmallTrainingSet\Triangle\triangle.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="startupConfig.json">
+    <None Update="videoConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -16,14 +16,36 @@ namespace HTMVideoLearning
     class VideoLearning
     {
         #region Learning with HtmClassifier key as FrameKey
-        public static void Run1(StartupConfig startupCfg = null, HtmConfig htmCfg = null)
+        /// <summary>
+        /// <br>Run1:</br>
+        /// <br>Training and Learning Video with HTMClassifier with key as a frame key</br>
+        /// <br>Testing Procedure:</br>
+        /// <br>Read the Training dataset</br>
+        /// <br>Preprocessing the frame into smaller resolution, lower frame rate, color to binarized value</br>
+        /// <br>Learn the patterns(frames) with SP till reaching newborn stable state</br>
+        /// <br>Learn the patterns(frames) with SP+TM to generate sequential relation of adjacent frames,</br>
+        /// <br>     The learning ends when average accuracy is more than 90% and stays for 40 cycles or reaching maxcycles</br>
+        /// <br>     Calculating Average accuracy:</br>
+        /// <br>         Get the Predicted cells of the current frames SDR through TM</br>
+        /// <br>         Use the Predicted cells in HTMClassifier to see if there are learned framekey</br>
+        /// <br>         If the key of the next frame is found, count increase 1.</br>
+        /// <br>         The average accuracy is calculated by average of videoset accuracy, </br>
+        /// <br>         videoset accuracy is calculated by average of all video accuracy in that set.</br>
+        /// <br>Testing session start:</br>
+        /// <br>Drag an Image as input, The trained layer will try to predict the next Frame, then uses the next frame as input to continue </br>
+        /// <br>as long as there are predicted cells.</br>
+        /// <br>The predicted series of Frame after the input frame are made into videos under Run1Experiment/TEST/</br>
+        /// </summary>
+        /// <param name="videoConfig"></param>
+        /// <param name="htmCfg"></param>
+        public static void Run1(VideoConfig videoConfig = null, HtmConfig htmCfg = null)
         {
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
             RenderHelloScreen();
 
-            string trainingFolderPath = startupCfg?.TrainingDatasetRoot ?? null;
+            string trainingFolderPath = videoConfig?.TrainingDatasetRoot ?? null;
 
             if (String.IsNullOrEmpty(trainingFolderPath))
                 trainingFolderPath = Console.ReadLine();
@@ -33,19 +55,6 @@ namespace HTMVideoLearning
             string outputFolder, convertedVideoDir, testOutputFolder;
 
             CreateTemporaryFolders(out outputFolder, out convertedVideoDir, out testOutputFolder);
-
-/*            int frameWidth = 18;
-            int frameHeight = 18;
-            double frameRate = 12;
-            ColorMode colorMode = ColorMode.BLACKWHITE;
-
-
-            // adding condition for 
-            // Define HTM parameters
-            int[] inputBits = { frameWidth * frameHeight * (int)colorMode };
-            int[] numColumns = { 1024 };*/
-            //Initiate configuration with frame width, frame height, frame rate, color mode and number of columns
-            VideoConfiguration vidConf = new VideoConfiguration(18, 18, 12.0, ColorMode.BLACKWHITE, 1024);
 
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
@@ -60,14 +69,14 @@ namespace HTMVideoLearning
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoDatasetRootFolder)
             {
-                VideoSet vs = new(path, vidConf.ColorMode, vidConf.FrameWidth, vidConf.FrameHeight, vidConf.FrameRate);
+                VideoSet vs = new(path, videoConfig.ColorMode, videoConfig.FrameWidth, videoConfig.FrameHeight, videoConfig.FrameRate);
                 videoData.Add(vs);
                 vs.ExtractFrames(convertedVideoDir);
             }
             //Initiating HTM
-            HtmConfig cfg = GetHTMConfig(vidConf.InputBits, vidConf.NumberOfColumns);
-
-            var mem = new Connections(cfg);
+            htmCfg.NumColumns = 18 * 18;
+            htmCfg.NumColumns = 1024;
+            var mem = new Connections(htmCfg);
 
             HtmClassifier<string, ComputeCycle> cls = new();
 
@@ -81,7 +90,7 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 10;
+            int maxCycles = 1;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -110,8 +119,8 @@ namespace HTMVideoLearning
             // Training SP to get stable. New-born stage.
             //
             ///*
-            //for (int i = 0; i < maxCycles; i++)
-            while (isInStableState == false)
+            for (int i = 0; i < maxCycles; i++)
+            //while (isInStableState == false)
             {
                 newbornCycle++;
 
@@ -124,18 +133,17 @@ namespace HTMVideoLearning
                     foreach (NVideo vid in set.nVideoList)
                     {
                         // Show the name of each video
-                        WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
+                        WriteLineColor($"VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
                         foreach (NFrame frame in vid.nFrames)
                         {
                             //Console.WriteLine($" -- {frame.FrameKey} --");
-
+                            Console.Write(".");
                             var lyrOut = layer1.Compute(frame.EncodedBitArray, learn);
 
                             if (isInStableState)
                                 break;
-
-
                         }
+                        Console.Write("\n");
                     }
                 }
 
@@ -363,7 +371,7 @@ namespace HTMVideoLearning
                     break;
                 }
                 testNo += 1;
-                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, vidConf.FrameWidth, vidConf.FrameHeight, vidConf.ColorMode);
+                NFrame inputFrame = new(new Bitmap(userInput), "TEST", "test", 0, videoConfig.FrameWidth, videoConfig.FrameHeight, videoConfig.ColorMode);
                 // Computing user input frame with trained layer 
                 var lyrOut = layer1.Compute(inputFrame.EncodedBitArray, false) as ComputeCycle;
                 var predictedInputValues = cls.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 5);
@@ -412,7 +420,7 @@ namespace HTMVideoLearning
                         frameSequence,
                         Path.Combine(dir,$"testNo_{testNo}_FirstPossibility_{clsPredictionRes.Similarity}_FirstLabel_{clsPredictionRes.PredictedInput}"),
                         (int)(videoData[0].nVideoList[0].frameRate),
-                        new Size((int)vidConf.FrameWidth, (int)vidConf.FrameHeight),
+                        new Size((int)videoConfig.FrameWidth, (int)videoConfig.FrameHeight),
                         true);
                     if(nextPredictedFrameExists == false)
                     {
@@ -425,7 +433,29 @@ namespace HTMVideoLearning
         #endregion
 
         #region Learning with HTMClassifier key as Series of FrameKey (Sequence Learning)
-        public static void Run2(StartupConfig startupCfg = null, HtmConfig htmCfg = null)
+        /// <summary>
+        /// <br> Run2:</br>
+        /// <br> Training and Learning Video with HTMClassifier with key as a serie of framekey</br>
+        /// <br> Testing Procedure:</br>
+        /// <br> Read the Training dataset</br>
+        /// <br> Preprocessing the frame into smaller resolution, lower frame rate, color to binarized value</br>
+        /// <br> Learn the patterns(frames) with SP till reaching newborn stable state</br>
+        /// <br> Learn the patterns(serie of frames) with SP+TM,</br>
+        /// <br> The serie of frames add each framekey respectively untill it reached the videos' framecount lengths:30</br>
+        /// <br> Then key - serie of frames with current frame as last frame is learned with the Cells index of the current frame.</br>
+        /// <br>      e.g. current frame circle_vd1_3's cell will be associate with key "circle_vd1_4-circle_vd1_5-circle_vd1_6-...-circle_vd1_29-circle_vd1_0-circle_vd1_1-circle_vd1_2-circle_vd1_3"</br>
+        /// <br>      through each iteration of frames in a video, the key will be framekey-shifted</br>
+        /// <br>      a List of Last Predicted Values is saved every frame iteration to be used in the next as validation.</br>
+        /// <br>          if LastPredictedValue of previous Frame contains the current frame's key, then match increase 1</br>
+        /// <br>          Accuracy is calculated each iteration of each Videos.</br>
+        /// <br>          The training ends when accuracy surpasses 80% more than 30 times or reaching max cycle</br>
+        /// <br> Testing session start:</br>
+        /// <br> Drag an Image as input, The trained layer will try to predict the next Frame, then uses the next frame label - framekey series</br>
+        /// <br> to recreate the video under Run2Experiment/TEST/</br>
+        /// </summary>
+        /// <param name="videoConfig"></param>
+        /// <param name="htmCfg"></param>
+        public static void Run2(VideoConfig videoConfig = null, HtmConfig htmCfg = null)
         {
             RenderHelloScreen();
 
@@ -433,7 +463,7 @@ namespace HTMVideoLearning
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
-            string trainingFolderPath = startupCfg?.TrainingDatasetRoot ?? null;
+            string trainingFolderPath = videoConfig?.TrainingDatasetRoot ?? null;
 
             if (String.IsNullOrEmpty(trainingFolderPath))
             {
@@ -455,12 +485,7 @@ namespace HTMVideoLearning
             }
 
             // Video Parameter 
-           /*int frameWidth = 18;
-            int frameHeight = 18;
-            ColorMode colorMode = ColorMode.BLACKWHITE;
-            double frameRate = 10;*/  
             //Initiate configuration
-            VideoConfiguration vidConf2 = new VideoConfiguration(18, 18, 10.0, ColorMode.BLACKWHITE, 1024);
             
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
@@ -474,7 +499,7 @@ namespace HTMVideoLearning
             // Iterate through every folder in TrainingVideos/ to create VideoSet: object that stores video of same folder/label
             foreach (string path in videoSetDirectories)
             {
-                VideoSet vs = new(path, vidConf2.ColorMode, vidConf2.FrameWidth, vidConf2.FrameHeight, vidConf2.FrameRate);
+                VideoSet vs = new(path, videoConfig.ColorMode, videoConfig.FrameWidth, videoConfig.FrameHeight, videoConfig.FrameRate);
                 videoData.Add(vs);
                 // Output converted Videos to Output/Converted/
                 vs.ExtractFrames(convertedVideoDir);
@@ -483,9 +508,8 @@ namespace HTMVideoLearning
             // Define HTM parameters
 
             //Initiating HTM
-            HtmConfig cfg = GetHTMConfig(vidConf2.InputBits, vidConf2.NumberOfColumns);
 
-            var mem = new Connections(cfg);
+            var mem = new Connections(htmCfg);
 
             HtmClassifier<string, ComputeCycle> cls = new();
 
@@ -497,7 +521,7 @@ namespace HTMVideoLearning
 
             bool learn = true;
 
-            int maxCycles = 10;
+            int maxCycles = 1;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, 30 * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -538,9 +562,8 @@ namespace HTMVideoLearning
                     WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
                     foreach (NVideo vid in set.nVideoList)
                     {
-                        Console.WriteLine($" Video: {vid.name}.");
                         // Name of the Video That is being trained 
-                        WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
+                        WriteLineColor($"VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
                         foreach (NFrame frame in vid.nFrames)
                         {
                             Console.Write(".");
@@ -727,7 +750,7 @@ namespace HTMVideoLearning
             int testNo = 0;
 
             // Test from startupConfig.json
-            foreach (var testFilePath in startupCfg.TestFiles)
+            foreach (var testFilePath in videoConfig.TestFiles)
             {
                 testNo = PredictImageInput(videoData, cls, layer1, testFilePath, testOutputFolder, testNo);
             }

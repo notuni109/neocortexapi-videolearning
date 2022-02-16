@@ -2,7 +2,7 @@
   "profiles": {
     "HTMVideoLearning": {
       "commandName": "Project",
-      "commandLineArgs": "startupConfig.json htmConfig.json"
+      "commandLineArgs": "videoConfig.json htmConfig.json"
     }
   }
 }
