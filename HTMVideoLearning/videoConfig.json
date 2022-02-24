@@ -3,7 +3,7 @@
   "frameWidth": 18,
   "frameHeight": 18,
   "frameRate": 12,
-  "ColorModeInt": 1,
+  "ColorMode": "BLACKWHITE",
   "TrainingDatasetRoot": "SmallTrainingSet",
   "TestFiles": [
     "Run2ExperimentOutput\\Converted\\Circle\\circle\\Circle_circle_3.png",

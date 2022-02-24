@@ -115,7 +115,7 @@ namespace VideoLibrary
             //Set the default codec of fourcc
             if( codec == null)
             {
-                codec = new char[] {'M', 'P', '4', 'V'};
+                codec = new char[] {'m', 'p', '4', 'v'};
             }
             int fourcc = VideoWriter.Fourcc(codec[0], codec[1], codec[2], codec[3]);
             //There was a -1 instead of fourcc which works on older framework to bring the drop down menu selection of codec

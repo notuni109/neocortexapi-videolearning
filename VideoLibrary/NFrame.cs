@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 
+
 namespace VideoLibrary
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     /// <summary>
     /// ColorMode is a defined mode of reading pixel's color of a video in each frame
     /// The goal is to reduce the resolution of the Video used for testing

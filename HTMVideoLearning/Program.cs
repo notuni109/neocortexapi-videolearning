@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using VideoLibrary;
 
 namespace HTMVideoLearning
@@ -22,8 +23,6 @@ namespace HTMVideoLearning
             // Saving all encoding of video frame may lead to memory outage
             // CONSIDER: taking only the data in VideoConfiguration then indexing the image name in Converted
 
-            // VideoLearning.Run1(videoConfig, htmConfig);
-
             VideoLearning.Run2(videoConfig, htmConfig);
         }
 
@@ -39,15 +38,13 @@ namespace HTMVideoLearning
         {
             // read startup Config File
             VideoConfig videoConfig = readConfig<VideoConfig>(args[0]);
-            videoConfig.initColorMode();
 
             // reading HTM Config File
             HtmConfig htmConfig = readConfig<HtmConfig>(args[1]);
 
             //Calculate inputbits and then turn it into an array as it is required for htm configuration
             int inputBits = videoConfig.FrameWidth * videoConfig.FrameHeight * (int)videoConfig.ColorMode;
-
-            
+ 
             htmConfig.InputDimensions = new int[] { inputBits };
             
             ModifyHtmFromCode(ref htmConfig);
@@ -58,19 +55,19 @@ namespace HTMVideoLearning
         /// <summary>
         /// Optional solution for modifying HTM settings in code
         /// </summary>
-        /// <param name="htmConfig"></param>
+        /// <param name="htmConfig">Htm Configuration to be modified</param>
         private static void ModifyHtmFromCode( ref HtmConfig htmConfig)
         {
             htmConfig.Random = new ThreadSafeRandom(42);
 
-            htmConfig.CellsPerColumn = 15;
+            htmConfig.CellsPerColumn = 30;
             htmConfig.GlobalInhibition = true;
             //htmConfig.LocalAreaDensity = -1;
             htmConfig.NumActiveColumnsPerInhArea = 0.02 * htmConfig.ColumnDimensions[0];
             htmConfig.PotentialRadius = (int)(0.15 * htmConfig.InputDimensions[0]);
             //htmConfig.InhibitionRadius = 15;
 
-            htmConfig.MaxBoost = 10.0;
+            htmConfig.MaxBoost = 20.0;
             htmConfig.DutyCyclePeriod = 100;
             htmConfig.MinPctOverlapDutyCycles = 0.75;
             htmConfig.MaxSynapsesPerSegment = (int)(0.02 * htmConfig.ColumnDimensions[0]);

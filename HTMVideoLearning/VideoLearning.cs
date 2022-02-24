@@ -462,23 +462,14 @@ namespace HTMVideoLearning
             //initiate time capture
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
-
-            string trainingFolderPath = videoConfig?.TrainingDatasetRoot ?? null;
-
-            if (String.IsNullOrEmpty(trainingFolderPath))
-            {
-                WriteLineColor("training Dataset path not detectected in startupConfig.json", ConsoleColor.Blue);
-                WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
-                WriteLineColor("sample set SmallTrainingSet/ is located in root directory", ConsoleColor.Blue);
-                trainingFolderPath = Console.ReadLine();
-            }
+            string trainingFolderPath = CheckIfPathExists(videoConfig);
 
             // Starting experiment
             sw.Start();
 
             // Output folder initiation
             string outputFolder = "Run2ExperimentOutput";
-            string convertedVideoDir = Path.Combine(outputFolder,"Converted");
+            string convertedVideoDir = Path.Combine(outputFolder, "Converted");
             if (!Directory.Exists($"{convertedVideoDir}"))
             {
                 Directory.CreateDirectory($"{convertedVideoDir}");
@@ -486,7 +477,7 @@ namespace HTMVideoLearning
 
             // Video Parameter 
             //Initiate configuration
-            
+
             // Define Reader for Videos
             // Input videos are stored in different folders under TrainingVideos/
             // with their folder's names as label value. To get the paths of all folders:
@@ -525,11 +516,11 @@ namespace HTMVideoLearning
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, 30 * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
-              {
-                  if (isStable)
+            {
+                if (isStable)
                     // Event should be fired when entering the stable state.
                     Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-                  else
+                else
                     // Ideal SP should never enter unstable state after stable state.
                     Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
 
@@ -706,11 +697,11 @@ namespace HTMVideoLearning
                             if (saturatedAccuracyCount >= 50 && lastCycleAccuracy > 80)
                             {
                                 List<string> outputLog = new();
-                                if(!Directory.Exists(Path.Combine($"{outputFolder}","TEST")))
+                                if (!Directory.Exists(Path.Combine($"{outputFolder}", "TEST")))
                                 {
-                                    Directory.CreateDirectory(Path.Combine($"{outputFolder}","TEST"));
+                                    Directory.CreateDirectory(Path.Combine($"{outputFolder}", "TEST"));
                                 }
-                                string fileName = Path.Combine(outputFolder,"TEST",$"saturatedAccuracyLog_{nv.label}_{nv.name}");
+                                string fileName = Path.Combine(outputFolder, "TEST", $"saturatedAccuracyLog_{nv.label}_{nv.name}");
                                 outputLog.Add($"Result Log for reaching saturated accuracy at {accuracy}");
                                 outputLog.Add($"Label: {nv.label}");
                                 outputLog.Add($"Video Name: {nv.name}");
@@ -733,7 +724,7 @@ namespace HTMVideoLearning
                     if (isCompletedSuccessfully == false)
                     {
                         Console.WriteLine($"The experiment didn't complete successully. Exit after {maxCycles}!");
-              
+
                     }
                     Console.WriteLine("------------ END ------------");
                     previousInputs.Clear();
@@ -741,7 +732,7 @@ namespace HTMVideoLearning
             }
             //Testing Section
             string userInput;
-            string testOutputFolder = Path.Combine(outputFolder,"TEST");
+            string testOutputFolder = Path.Combine(outputFolder, "TEST");
             if (!Directory.Exists(testOutputFolder))
             {
                 Directory.CreateDirectory(testOutputFolder);
@@ -761,11 +752,32 @@ namespace HTMVideoLearning
 
             userInput = Console.ReadLine().Replace("\"", "");
 
-            while (userInput!="Q")
+            while (userInput != "Q")
             {
                 testNo = PredictImageInput(videoData, cls, layer1, userInput, testOutputFolder, testNo);
                 userInput = Console.ReadLine().Replace("\"", "");
             }
+        }
+
+        /// <summary>
+        /// Checking if Training DatasetRoot is defined in videoConfig.json
+        /// if not Prompt the user to manually input the path to the program 
+        /// </summary>
+        /// <param name="videoConfig"></param>
+        /// <returns></returns>
+        private static string CheckIfPathExists(VideoConfig videoConfig)
+        {
+            string trainingFolderPath = videoConfig?.TrainingDatasetRoot ?? null;
+
+            if (String.IsNullOrEmpty(trainingFolderPath))
+            {
+                WriteLineColor("training Dataset path not detectected in startupConfig.json", ConsoleColor.Blue);
+                WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
+                WriteLineColor("For example sample set SmallTrainingSet/ is located in root directory", ConsoleColor.Blue);
+                trainingFolderPath = Console.ReadLine();
+            }
+
+            return trainingFolderPath;
         }
 
         #endregion
