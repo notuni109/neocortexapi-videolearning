@@ -67,7 +67,7 @@ namespace HTMVideoLearning
             htmConfig.PotentialRadius = (int)(0.15 * htmConfig.InputDimensions[0]);
             //htmConfig.InhibitionRadius = 15;
 
-            htmConfig.MaxBoost = 20.0;
+            htmConfig.MaxBoost = 30.0;
             htmConfig.DutyCyclePeriod = 100;
             htmConfig.MinPctOverlapDutyCycles = 0.75;
             htmConfig.MaxSynapsesPerSegment = (int)(0.02 * htmConfig.ColumnDimensions[0]);
